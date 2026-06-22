@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+# nested workspace node_modules (monorepo packages/apps)
+**/node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -17,12 +19,21 @@
 /.next/
 /out/
 
+# turbo / monorepo build caches
+.turbo/
+**/dist/
+**/.turbo/
+
 # production
 /build
 
 # misc
 .DS_Store
 *.pem
+
+# large binaries / installers (exceed GitHub 100MB limit; not project source)
+*.exe
+public/assets/icons/*.exe
 
 # debug
 npm-debug.log*
@@ -32,6 +43,8 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# ...but allow the placeholder example (no real values) to be committed
+!.env.example
 
 # vercel
 .vercel
@@ -39,3 +52,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# private source code uploads (never serve publicly)
+/private/source-codes/
