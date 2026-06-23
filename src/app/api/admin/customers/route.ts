@@ -19,18 +19,26 @@ export async function GET() {
       u.created_at as "createdAt",
       COUNT(DISTINCT l.id)::int           AS "licenseCount",
       COALESCE(MAX(ct.balance_after), 0)  AS balance,
+      -- DISTINCT: the joins (licenses × credit_transactions) multiply rows, which
+      -- would otherwise repeat each role once per combination → duplicate React keys.
       COALESCE(
-        json_agg(
-          json_build_object('id', r.id, 'name', r.name, 'color', r.color, 'priority', r.priority)
-          ORDER BY r.priority DESC
-        ) FILTER (WHERE r.id IS NOT NULL),
+        (
+          SELECT json_agg(
+            json_build_object('id', dr.id, 'name', dr.name, 'color', dr.color, 'priority', dr.priority)
+            ORDER BY dr.priority DESC
+          )
+          FROM (
+            SELECT DISTINCT r.id, r.name, r.color, r.priority
+            FROM user_roles ur2
+            JOIN roles r ON r.id = ur2.role_id
+            WHERE ur2.user_id = u.id
+          ) dr
+        ),
         '[]'::json
       ) AS roles
     FROM users u
     LEFT JOIN licenses          l  ON l.user_id   = u.id
     LEFT JOIN credit_transactions ct ON ct.user_id = u.id
-    LEFT JOIN user_roles        ur ON ur.user_id  = u.id
-    LEFT JOIN roles             r  ON r.id        = ur.role_id
     GROUP BY u.id
     ORDER BY u.created_at DESC
   `))

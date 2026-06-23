@@ -9,6 +9,16 @@ import { useLanguage } from "@/lib/language-context"
 
 type Tab = "giris" | "kayit"
 
+// NextAuth, OAuth giriş hatalarında /giris?error=KOD şeklinde yönlendirir.
+const OAUTH_ERROR_MESSAGES: Record<string, string> = {
+  OAuthAccountNotLinked:
+    "Bu e-posta adresi zaten kayıtlı. Lütfen e-posta ve şifrenizle giriş yapın.",
+  OAuthSignin: "Sosyal giriş başlatılamadı. Lütfen tekrar deneyin.",
+  OAuthCallback: "Sosyal giriş tamamlanamadı. Lütfen tekrar deneyin.",
+  AccessDenied: "Erişim reddedildi. Giriş izni verilmedi.",
+  Configuration: "Giriş yapılandırmasında bir sorun var. Lütfen yöneticiyle iletişime geçin.",
+}
+
 export default function GirisPage() {
   const router = useRouter()
   const { status } = useSession()
@@ -21,6 +31,15 @@ export default function GirisPage() {
   const [tab, setTab] = useState<Tab>("giris")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+
+  // URL'deki OAuth hata kodunu okuyup kullanıcıya anlaşılır bir mesaj göster.
+  // window.location kullanıyoruz; useSearchParams Suspense boundary gerektirir.
+  useEffect(() => {
+    const code = new URLSearchParams(window.location.search).get("error")
+    if (code) {
+      setError(OAUTH_ERROR_MESSAGES[code] ?? "Giriş sırasında bir hata oluştu. Lütfen tekrar deneyin.")
+    }
+  }, [])
   const [loginTurnstileToken, setLoginTurnstileToken] = useState("")
   const [regTurnstileToken, setRegTurnstileToken] = useState("")
 

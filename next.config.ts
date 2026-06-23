@@ -9,7 +9,8 @@ const isDev = process.env.NODE_ENV !== "production";
 // (which would force every page into dynamic rendering). 'unsafe-eval' is only
 // allowed in development (React dev tooling). img-src allows https/data/blob to
 // support user avatars and remote product/blog images. connect-src allows the
-// external services the app calls (Cloudflare Turnstile, ip-api, Discord).
+// external services the app calls (Cloudflare Turnstile, ip-api, Discord, and
+// the Iconify icon API which @iconify/react fetches on-demand at runtime).
 const cspHeader = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://challenges.cloudflare.com`,
@@ -17,7 +18,7 @@ const cspHeader = [
   "img-src 'self' blob: data: https:",
   "font-src 'self' data:",
   "frame-src https://challenges.cloudflare.com",
-  "connect-src 'self' https://challenges.cloudflare.com https://discord.com http://ip-api.com https://ip-api.com",
+  "connect-src 'self' https://challenges.cloudflare.com https://discord.com http://ip-api.com https://ip-api.com https://api.iconify.design https://api.simplesvg.com https://api.unisvg.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

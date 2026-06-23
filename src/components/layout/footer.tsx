@@ -112,14 +112,27 @@ export function Footer({ className }: FooterProps) {
           </div>
         </div>
 
-        <div className="mt-10 flex items-center justify-center gap-1.5 text-sm text-white/40 flex-wrap">
+        {/* Sponsor */}
+        <div className="mt-12 flex items-center justify-center gap-2 text-sm text-white/40 flex-wrap">
+          <span>Sponsorumuz</span>
+          <a
+            href="https://hostingtelekom.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-emerald-400 transition-colors hover:text-emerald-300"
+          >
+            Hosting Telekom
+          </a>
+          <span>&apos;a teşekkürler</span>
+        </div>
+
+        <div className="mt-4 flex items-center justify-center gap-1.5 text-sm text-white/40 flex-wrap">
           <span>Developed by</span>
           <a href="https://discord.gg/lbdev" target="_blank" rel="noopener noreferrer"
             className="font-semibold text-indigo-400 hover:text-indigo-300 transition-colors">CanBye</a>
-          <span className="text-white/20">·</span>
-          <span>Design by</span>
+          <span className="text-white/20">&amp;</span>
           <a href="https://discord.gg/lbdev" target="_blank" rel="noopener noreferrer"
-            className="font-semibold text-purple-400 hover:text-purple-300 transition-colors">LBDevz Team</a>
+            className="font-semibold text-purple-400 hover:text-purple-300 transition-colors">Swag</a>
         </div>
 
         <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-white/[0.06] pt-8 sm:flex-row">

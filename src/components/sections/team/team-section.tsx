@@ -1,12 +1,14 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Link from "next/link"
 import { motion } from "framer-motion"
 import { Icon } from "@iconify/react"
 import { useLanguage } from "@/lib/language-context"
 
 interface TeamMember {
   id: string
+  slug: string | null
   name: string
   role: string
   bio: string | null
@@ -17,15 +19,14 @@ interface TeamMember {
   order: number
 }
 
+/** Stops the card's <Link> navigation when clicking a nested social link. */
+const stop = (e: React.MouseEvent) => e.stopPropagation()
+
 function MemberCard({ member, index }: { member: TeamMember; index: number }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.5, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
-      className="group relative flex flex-col items-center rounded-2xl border border-white/[0.07] bg-[#070707] p-6 text-center transition-all hover:border-white/[0.13] hover:bg-[#0a0a0a]"
-    >
+  const clickable = Boolean(member.slug)
+
+  const inner = (
+    <>
       <div className="absolute inset-x-16 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.05] to-transparent" />
 
       <div className="relative mb-4">
@@ -49,24 +50,51 @@ function MemberCard({ member, index }: { member: TeamMember; index: number }) {
       {(member.github || member.discord || member.twitter) && (
         <div className="mt-4 flex items-center gap-2">
           {member.github && (
-            <a href={`https://github.com/${member.github}`} target="_blank" rel="noopener noreferrer"
+            <a href={`https://github.com/${member.github}`} target="_blank" rel="noopener noreferrer" onClick={stop}
               className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/[0.07] bg-white/[0.03] text-white/35 hover:text-white hover:border-white/20 transition-all">
               <Icon icon="carbon:logo-github" width={14} />
             </a>
           )}
           {member.discord && (
-            <a href={`https://discord.com/users/${member.discord}`} target="_blank" rel="noopener noreferrer"
+            <a href={`https://discord.com/users/${member.discord}`} target="_blank" rel="noopener noreferrer" onClick={stop}
               className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/[0.07] bg-white/[0.03] text-white/35 hover:text-indigo-400 hover:border-indigo-500/30 transition-all">
               <Icon icon="carbon:logo-discord" width={14} />
             </a>
           )}
           {member.twitter && (
-            <a href={`https://twitter.com/${member.twitter}`} target="_blank" rel="noopener noreferrer"
+            <a href={`https://twitter.com/${member.twitter}`} target="_blank" rel="noopener noreferrer" onClick={stop}
               className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/[0.07] bg-white/[0.03] text-white/35 hover:text-sky-400 hover:border-sky-500/30 transition-all">
               <Icon icon="carbon:logo-twitter" width={14} />
             </a>
           )}
         </div>
+      )}
+
+      {clickable && (
+        <span className="mt-4 inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-white/25 transition-colors group-hover:text-emerald-400">
+          Profili Gör
+          <Icon icon="carbon:arrow-right" width={12} />
+        </span>
+      )}
+    </>
+  )
+
+  const className =
+    "group relative flex flex-col items-center rounded-2xl border border-white/[0.07] bg-[#070707] p-6 text-center transition-all hover:border-white/[0.13] hover:bg-[#0a0a0a]"
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.5, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+    >
+      {clickable ? (
+        <Link href={`/ekip/${member.slug}`} className={className}>
+          {inner}
+        </Link>
+      ) : (
+        <div className={className}>{inner}</div>
       )}
     </motion.div>
   )
