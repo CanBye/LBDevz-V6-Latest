@@ -4,7 +4,7 @@ export const siteConfig = {
   name: "LBDev",
   tagline: "Plugin, script ve dijital ürünler — senin için, senin hızında.",
   discordInvite: "https://discord.gg/lbdev",
-  email: "info@lbdev.com",
+  email: "info@lbdevz.com",
   year: new Date().getFullYear(),
 } as const;
 
