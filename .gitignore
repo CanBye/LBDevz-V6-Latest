@@ -45,6 +45,7 @@ yarn-error.log*
 .env*
 # ...but allow the placeholder example (no real values) to be committed
 !.env.example
+!.env
 
 # vercel
 .vercel
