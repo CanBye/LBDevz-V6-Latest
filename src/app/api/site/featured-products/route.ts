@@ -3,7 +3,7 @@ import { db } from "@/lib/db"
 import { products } from "@lbdevz/db"
 import { eq, and, asc } from "drizzle-orm"
 
-export const revalidate = 300
+export const dynamic = "force-dynamic"
 
 export async function GET() {
   const rows = await db
