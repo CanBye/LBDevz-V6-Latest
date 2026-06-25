@@ -2,6 +2,7 @@
   "name": "lbdevz",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "npm@11.6.2",
   "workspaces": [
     "packages/*"
   ],
@@ -12,9 +13,9 @@
     "lint": "eslint",
     "turbo:dev": "turbo dev",
     "turbo:build": "turbo build",
-    "db:generate": "turbo db:generate --filter=@lbdevz/db",
-    "db:migrate": "turbo db:migrate --filter=@lbdevz/db",
-    "db:studio": "turbo db:studio --filter=@lbdevz/db"
+    "db:generate": "npm run db:generate -w @lbdevz/db",
+    "db:migrate": "npm run db:migrate -w @lbdevz/db",
+    "db:studio": "npm run db:studio -w @lbdevz/db"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.2",
