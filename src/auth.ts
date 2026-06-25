@@ -11,6 +11,7 @@ import { verifyTurnstile } from "@/lib/turnstile"
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true,
   adapter: DrizzleAdapter(db, {
     usersTable: users,
     accountsTable: accounts,
