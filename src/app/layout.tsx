@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import { SessionProvider } from "next-auth/react";
 import { LanguageProvider } from "@/lib/language-context";
@@ -7,18 +6,6 @@ import { AuthorizedPurchaseBanner } from "@/components/layout/authorized-purchas
 import { SmoothScroll } from "@/components/providers/smooth-scroll";
 import { PageTracker } from "@/components/analytics/tracker";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: {
@@ -79,10 +66,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="tr"
-      className={`${geistSans.variable} ${geistMono.variable}`}
-    >
+    <html lang="tr">
       <body className="min-h-dvh flex flex-col">
         <Script
           id="turnstile-init"
