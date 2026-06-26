@@ -5,8 +5,8 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatedTextCycle } from "@/components/ui/animated-text-cycle";
-import { CanvasRevealEffect } from "@/components/ui/canvas-reveal-effect"
-import { CosmicParallaxBg } from "@/components/ui/cosmic-parallax-bg";
+import { LaserFlow } from "@/components/ui/laser-flow";
+;
 import { MiniNavbar } from "@/components/layout/mini-navbar";
 import { assets } from "@/lib/assets";
 import { useLanguage } from "@/lib/language-context";
@@ -27,15 +27,6 @@ const HERO_SERVICE_ITEMS = [
   { label: "Discord Bot", icon: assets.icons.discordBot },
 ];
 
-// 6 süzülen logo — sol 3, sağ 3 simetrik dağılım
-const FLING_LOGOS = [
-  { id: "minecraft", icon: assets.icons.minecraftSymbol, x: -580, y: -155, size: 78, delay: 0 },
-  { id: "codin", icon: assets.icons.codin, x: -760, y: 10, size: 74, delay: 0.1 },
-  { id: "fivem", icon: assets.icons.fivemScript, x: -560, y: 168, size: 76, delay: 0.2 },
-  { id: "discord", icon: assets.icons.discordBrand, x: 580, y: -155, size: 78, delay: 0.05 },
-  { id: "github", icon: assets.icons.github, x: 760, y: 10, size: 74, delay: 0.15 },
-  { id: "plugin", icon: assets.icons.plugin, x: 560, y: 168, size: 76, delay: 0.25 },
-];
 
 interface HeroSectionProps {
   className?: string;
@@ -47,18 +38,22 @@ export function HeroSection({ className, heroReady = false }: HeroSectionProps) 
   return (
     <div className={cn("relative flex min-h-screen w-full flex-col bg-black", className)}>
       <div className="pointer-events-none absolute inset-0 z-0" aria-hidden="true">
-        <CosmicParallaxBg className="z-0" />
-        {heroReady && (
-          <CanvasRevealEffect
-            animationSpeed={3}
-            containerClassName="bg-transparent"
-            colors={CANVAS_COLORS}
-            dotSize={6}
-            reverse={false}
-          />
-        )}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(0,0,0,0.6)_0%,_transparent_65%)]" />
-        <div className="absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-black to-transparent" />
+        <LaserFlow
+          color="#6c238b"
+          wispDensity={1.8}
+          flowSpeed={0.5}
+          verticalSizing={2}
+          horizontalSizing={0.9}
+          fogIntensity={0.15}
+          fogScale={0.3}
+          wispSpeed={16}
+          wispIntensity={15}
+          flowStrength={0.5}
+          decay={1.9}
+          horizontalBeamOffset={0}
+          verticalBeamOffset={-0.5}
+          className="absolute inset-0"
+        />
       </div>
 
       <MiniNavbar />
@@ -66,48 +61,6 @@ export function HeroSection({ className, heroReady = false }: HeroSectionProps) 
       <main className="relative z-10 flex min-h-0 flex-1 items-center justify-center overflow-x-hidden px-4">
         <div className="flex w-full max-w-3xl flex-col items-center text-center">
           <div className="relative w-full max-w-6xl overflow-visible">
-            {heroReady &&
-              FLING_LOGOS.map((slot, index) => (
-                <motion.div
-                  key={slot.id}
-                  className="pointer-events-none absolute left-1/2 top-1/2 z-[15]"
-                  style={{
-                    width: slot.size,
-                    height: slot.size,
-                    marginLeft: -slot.size / 2,
-                    marginTop: -slot.size / 2,
-                  }}
-                  initial={{ x: 0, y: 70, opacity: 0, scale: 0.15 }}
-                  animate={{ x: slot.x, y: slot.y, opacity: 1, scale: 1 }}
-                  transition={{
-                    duration: 1.35,
-                    delay: slot.delay,
-                    ease: [0.16, 1, 0.3, 1],
-                  }}
-                >
-                  <motion.div
-                    className="size-full"
-                    animate={{
-                      y: [0, -12, 6, 0],
-                      x: [0, index % 2 === 0 ? 6 : -6, 0],
-                      rotate: [0, index % 2 === 0 ? 3 : -3, 0],
-                    }}
-                    transition={{
-                      duration: 4.8 + index * 0.35,
-                      delay: slot.delay + 1.3,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                  >
-                    <img
-                      src={slot.icon}
-                      alt=""
-                      draggable={false}
-                      className="size-full object-contain drop-shadow-[0_6px_24px_rgba(0,0,0,0.5)]"
-                    />
-                  </motion.div>
-                </motion.div>
-              ))}
 
             <motion.h1
               initial={{ opacity: 0, y: 16 }}

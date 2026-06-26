@@ -2,39 +2,34 @@
 
 import { useEffect, useState } from "react"
 
-function generateStarBoxShadow(count: number): string {
-  const shadows: string[] = []
+function generateShadow(count: number): string {
+  const s: string[] = []
   for (let i = 0; i < count; i++) {
-    const x = Math.floor(Math.random() * 2000)
-    const y = Math.floor(Math.random() * 2000)
-    shadows.push(`${x}px ${y}px #FFF`)
+    s.push(`${Math.floor(Math.random() * 2000)}px ${Math.floor(Math.random() * 2000)}px #FFF`)
   }
-  return shadows.join(", ")
+  return s.join(", ")
 }
 
 export function CosmicParallaxBg({ className = "" }: { className?: string }) {
-  const [smallStars, setSmallStars] = useState("")
-  const [mediumStars, setMediumStars] = useState("")
-  const [bigStars, setBigStars] = useState("")
+  const [s, setS] = useState("")
+  const [m, setM] = useState("")
+  const [l, setL] = useState("")
 
   useEffect(() => {
-    setSmallStars(generateStarBoxShadow(700))
-    setMediumStars(generateStarBoxShadow(200))
-    setBigStars(generateStarBoxShadow(100))
+    setS(generateShadow(700))
+    setM(generateShadow(200))
+    setL(generateShadow(100))
   }, [])
 
   return (
-    <div className={`cosmic-parallax-root ${className}`} aria-hidden="true">
-      <div className="cosmic-stars-s" style={{ boxShadow: smallStars }} />
-      <div className="cosmic-stars-s-after" style={{ boxShadow: smallStars }} />
-      <div className="cosmic-stars-m" style={{ boxShadow: mediumStars }} />
-      <div className="cosmic-stars-m-after" style={{ boxShadow: mediumStars }} />
-      <div className="cosmic-stars-l" style={{ boxShadow: bigStars }} />
-      <div className="cosmic-stars-l-after" style={{ boxShadow: bigStars }} />
-      <div className="cosmic-horizon">
+    <div className={`cosmic-root ${className}`} aria-hidden="true">
+      <div id="cosmic-stars"  style={{ boxShadow: s }} />
+      <div id="cosmic-stars2" style={{ boxShadow: m }} />
+      <div id="cosmic-stars3" style={{ boxShadow: l }} />
+      <div id="cosmic-horizon">
         <div className="cosmic-glow" />
       </div>
-      <div className="cosmic-earth" />
+      <div id="cosmic-earth" />
     </div>
   )
 }

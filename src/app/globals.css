@@ -141,86 +141,170 @@
   .rich-content a { color: #818cf8; text-decoration: underline; }
 }
 
+/* ─── LaserFlow ──────────────────────────────────────────────────────────────── */
+.laser-flow-container {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* ─── Animated Gradient Background ──────────────────────────────────────────── */
+@keyframes agMove1 {
+  0%, 100% { transform: translate(0%, 0%) scale(1); }
+  33%       { transform: translate(5%, -8%) scale(1.1); }
+  66%       { transform: translate(-4%, 6%) scale(0.95); }
+}
+@keyframes agMove2 {
+  0%, 100% { transform: translate(0%, 0%) scale(1); }
+  33%       { transform: translate(-6%, 5%) scale(1.08); }
+  66%       { transform: translate(8%, -4%) scale(0.92); }
+}
+@keyframes agMove3 {
+  0%, 100% { transform: translate(0%, 0%) scale(1); }
+  50%       { transform: translate(-5%, -5%) scale(1.12); }
+}
+@keyframes agMove4 {
+  0%, 100% { transform: translate(0%, 0%) scale(1); }
+  40%       { transform: translate(7%, 4%) scale(0.9); }
+  80%       { transform: translate(-3%, -7%) scale(1.05); }
+}
+@keyframes agMove5 {
+  0%, 100% { transform: translate(0%, 0%) scale(1); }
+  50%       { transform: translate(4%, 8%) scale(1.1); }
+}
+
+.animated-gradient-root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #000;
+}
+
+.ag-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.55;
+  will-change: transform;
+}
+.ag-blob-1 {
+  width: 60vw; height: 60vw;
+  top: -15%; left: -10%;
+  background: radial-gradient(circle, rgba(96,165,250,0.8) 0%, transparent 70%);
+  animation: agMove1 18s ease-in-out infinite;
+}
+.ag-blob-2 {
+  width: 50vw; height: 50vw;
+  top: 20%; right: -10%;
+  background: radial-gradient(circle, rgba(244,114,182,0.75) 0%, transparent 70%);
+  animation: agMove2 22s ease-in-out infinite;
+}
+.ag-blob-3 {
+  width: 40vw; height: 40vw;
+  bottom: -5%; left: 20%;
+  background: radial-gradient(circle, rgba(167,139,250,0.7) 0%, transparent 70%);
+  animation: agMove3 16s ease-in-out infinite;
+}
+.ag-blob-4 {
+  width: 35vw; height: 35vw;
+  top: 40%; left: 30%;
+  background: radial-gradient(circle, rgba(52,211,153,0.5) 0%, transparent 70%);
+  animation: agMove4 20s ease-in-out infinite;
+}
+.ag-blob-5 {
+  width: 30vw; height: 30vw;
+  bottom: 10%; right: 15%;
+  background: radial-gradient(circle, rgba(251,191,36,0.45) 0%, transparent 70%);
+  animation: agMove5 24s ease-in-out infinite;
+}
+.ag-noise {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.35;
+  pointer-events: none;
+}
+
 /* ─── Cosmic Parallax Background ────────────────────────────────────────────── */
 @keyframes cosmicAnimStar {
   from { transform: translateY(0px); }
   to   { transform: translateY(-2000px); }
 }
 
-.cosmic-parallax-root {
+.cosmic-root {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+  background: linear-gradient(to bottom, #04060f 0%, #060d1f 50%, #020408 100%);
 }
 
-/* small stars */
-.cosmic-stars-s {
+/* Stars */
+#cosmic-stars {
   width: 1px; height: 1px;
+  background: transparent;
   border-radius: 50%;
-  animation: cosmicAnimStar 50s linear infinite;
   position: absolute; top: 0; left: 0;
-}
-.cosmic-stars-s-after {
-  width: 1px; height: 1px;
-  border-radius: 50%;
-  position: absolute; top: 2000px; left: 0;
   animation: cosmicAnimStar 50s linear infinite;
 }
-
-/* medium stars */
-.cosmic-stars-m {
+#cosmic-stars2 {
   width: 2px; height: 2px;
+  background: transparent;
   border-radius: 50%;
-  animation: cosmicAnimStar 100s linear infinite;
   position: absolute; top: 0; left: 0;
-}
-.cosmic-stars-m-after {
-  width: 2px; height: 2px;
-  border-radius: 50%;
-  position: absolute; top: 2000px; left: 0;
   animation: cosmicAnimStar 100s linear infinite;
 }
-
-/* large stars */
-.cosmic-stars-l {
+#cosmic-stars3 {
   width: 3px; height: 3px;
+  background: transparent;
   border-radius: 50%;
-  animation: cosmicAnimStar 150s linear infinite;
   position: absolute; top: 0; left: 0;
-}
-.cosmic-stars-l-after {
-  width: 3px; height: 3px;
-  border-radius: 50%;
-  position: absolute; top: 2000px; left: 0;
   animation: cosmicAnimStar 150s linear infinite;
 }
 
-/* horizon glow */
-.cosmic-horizon {
+/* Earth — mostly hidden below viewport, only the curved top visible */
+#cosmic-earth {
+  position: absolute;
+  bottom: -72%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 160vw;
+  max-width: 1600px;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 45% 30%, #050d1a 0%, #020408 70%);
+  box-shadow:
+    0 0 0 2px rgba(20, 80, 160, 0.12),
+    0 -4px 60px 8px rgba(20, 80, 180, 0.18),
+    inset 0 0 120px rgba(0, 0, 0, 0.95);
+  pointer-events: none;
+}
+
+/* Horizon — thin bright blue glow line at the earth's edge */
+#cosmic-horizon {
   position: absolute;
   bottom: 0; left: 0; right: 0;
-  height: 40%;
-  background: linear-gradient(to top, rgba(30,50,100,0.35) 0%, transparent 100%);
+  height: 50%;
   pointer-events: none;
 }
 .cosmic-glow {
   position: absolute;
-  bottom: 0; left: 50%;
+  bottom: 27.5%;
+  left: 50%;
   transform: translateX(-50%);
-  width: 600px; height: 200px;
-  background: radial-gradient(ellipse at center bottom, rgba(99,102,241,0.25) 0%, transparent 70%);
-  filter: blur(24px);
-}
-
-/* earth */
-.cosmic-earth {
-  position: absolute;
-  bottom: -280px; left: 50%;
-  transform: translateX(-50%);
-  width: 900px; height: 900px;
+  width: 75vw;
+  max-width: 960px;
+  height: 3px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(40, 140, 255, 0.6) 20%,
+    rgba(80, 180, 255, 0.95) 50%,
+    rgba(40, 140, 255, 0.6) 80%,
+    transparent 100%
+  );
   border-radius: 50%;
-  background: radial-gradient(ellipse at 30% 30%, #1e3a5f, #090a0f 70%);
-  box-shadow: 0 0 80px rgba(99,102,241,0.15), inset 0 0 60px rgba(0,0,0,0.8);
-  pointer-events: none;
+  filter: blur(4px);
+  box-shadow: 0 0 30px 12px rgba(40, 120, 240, 0.4), 0 0 80px 30px rgba(20, 80, 200, 0.2);
 }
