@@ -5,7 +5,8 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatedTextCycle } from "@/components/ui/animated-text-cycle";
-import { CanvasRevealEffect } from "@/components/ui/canvas-reveal-effect";
+import { CanvasRevealEffect } from "@/components/ui/canvas-reveal-effect"
+import { CosmicParallaxBg } from "@/components/ui/cosmic-parallax-bg";
 import { MiniNavbar } from "@/components/layout/mini-navbar";
 import { assets } from "@/lib/assets";
 import { useLanguage } from "@/lib/language-context";
@@ -46,16 +47,17 @@ export function HeroSection({ className, heroReady = false }: HeroSectionProps) 
   return (
     <div className={cn("relative flex min-h-screen w-full flex-col bg-black", className)}>
       <div className="pointer-events-none absolute inset-0 z-0" aria-hidden="true">
+        <CosmicParallaxBg className="z-0" />
         {heroReady && (
           <CanvasRevealEffect
             animationSpeed={3}
-            containerClassName="bg-black"
+            containerClassName="bg-transparent"
             colors={CANVAS_COLORS}
             dotSize={6}
             reverse={false}
           />
         )}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(0,0,0,0.75)_0%,_transparent_65%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(0,0,0,0.6)_0%,_transparent_65%)]" />
         <div className="absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-black to-transparent" />
       </div>
 
