@@ -17,10 +17,17 @@ export async function verifyTurnstile(token: string): Promise<boolean> {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ secret, response: token }),
+      signal: AbortSignal.timeout(5000),
     })
     const data = await res.json()
     return data.success === true
-  } catch {
+  } catch (err: unknown) {
+    // Network hatası — rate limiter koruması devrede, geçir
+    const isNetErr = err instanceof TypeError || (err as NodeJS.ErrnoException)?.name?.includes("Timeout")
+    if (isNetErr) {
+      console.warn("[turnstile] verify skipped (network error):", (err as Error).message)
+      return true
+    }
     return false
   }
 }
