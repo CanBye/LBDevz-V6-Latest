@@ -36,6 +36,34 @@
       "when": 1750118400000,
       "tag": "0004_source_code_and_contract",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1750204800000,
+      "tag": "0005_add_review_image",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1750291200000,
+      "tag": "0006_seed_permissions",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1750377600000,
+      "tag": "0007_team_portfolio",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1750464000000,
+      "tag": "0008_site_settings_and_product_developers",
+      "breakpoints": true
     }
   ]
 }
