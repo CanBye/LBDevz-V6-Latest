@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { requirePermission, ADMIN_PERMISSIONS } from "@/lib/admin"
+import { requirePermission, ADMIN_PERMISSIONS, isSuperAdmin } from "@/lib/admin"
 import { hasPermission } from "@/lib/rbac"
 import { db } from "@/lib/db"
 import { products, users, notifications, webhookConfigs } from "@lbdevz/db"
@@ -12,7 +12,7 @@ export async function PATCH(
   const session = await requirePermission(ADMIN_PERMISSIONS.PRODUCTS)
   if (!session) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 })
 
-  const canPublish = await hasPermission(session.user.id!, "products.publish")
+  const canPublish = isSuperAdmin(session.user.email) || await hasPermission(session.user.id!, "products.publish")
   if (!canPublish) {
     return NextResponse.json({ error: "Ürün yayınlama yetkiniz yok" }, { status: 403 })
   }
