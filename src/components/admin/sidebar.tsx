@@ -165,7 +165,7 @@ export function AdminSidebar({ isSuperAdmin, permissions }: AdminSidebarProps) {
       </div>
 
       {/* Sidebar Items */}
-      <div className="flex-1 overflow-y-auto py-6 px-3 space-y-7 scrollbar-none">
+      <div className="flex-1 min-h-0 overflow-y-auto py-6 px-3 space-y-7">
         {visibleSections.map((section) => (
           <div key={section.title} className="space-y-1.5">
             {!collapsed && (
