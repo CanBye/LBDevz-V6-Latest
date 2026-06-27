@@ -90,18 +90,23 @@ export default function AdminProductsPage() {
 
   // Bulk add modal
   const [bulkOpen,      setBulkOpen]      = useState(false)
-  const [bulkSaving,    setBulkSaving]    = useState(false)
-  const [bulkMsg,       setBulkMsg]       = useState<{ type: "ok" | "err"; text: string } | null>(null)
-  const [bulkType,      setBulkType]      = useState("minecraft_plugin")
   const [bulkLicModel,  setBulkLicModel]  = useState("lifetime")
   const [bulkEnableLic, setBulkEnableLic] = useState(true)
-  const [bulkEnableObf, setBulkEnableObf] = useState(false)
-  const [bulkRows,      setBulkRows]      = useState<{ id: number; name: string; price: string; category: string }[]>([
-    { id: Date.now(), name: "", price: "", category: "" },
+  const [bulkEnableObf, setBulkEnableObf] = useState(true)
+  interface BulkRow { id: number; name: string; price: string; type: string; jar: File | null }
+  const [bulkRows, setBulkRows] = useState<BulkRow[]>([
+    { id: Date.now(), name: "", price: "", type: "minecraft_plugin", jar: null },
   ])
+  // Progress view
+  type StepStatus = "wait" | "running" | "done" | "err"
+  interface BulkProgress { name: string; step: string; status: StepStatus; error?: string }
+  const [bulkProgress, setBulkProgress] = useState<BulkProgress[]>([])
+  const [bulkRunning,  setBulkRunning]  = useState(false)
+  const [bulkDone,     setBulkDone]     = useState(false)
+  const bulkJarRefs = useRef<Map<number, HTMLInputElement>>(new Map())
 
   function bulkAddRow() {
-    setBulkRows(r => [...r, { id: Date.now(), name: "", price: "", category: "" }])
+    setBulkRows(r => [...r, { id: Date.now(), name: "", price: "", type: "minecraft_plugin", jar: null }])
   }
   function bulkRemoveRow(id: number) {
     setBulkRows(r => r.filter(x => x.id !== id))
@@ -109,35 +114,82 @@ export default function AdminProductsPage() {
   function bulkSetRow(id: number, field: string, value: string) {
     setBulkRows(r => r.map(x => (x.id === id ? { ...x, [field]: value } : x)))
   }
+  function bulkSetJar(id: number, file: File | null) {
+    setBulkRows(r => r.map(x => (x.id === id ? { ...x, jar: file } : x)))
+  }
+  function setProgress(idx: number, step: string, status: StepStatus, error?: string) {
+    setBulkProgress(prev => prev.map((p, i) => i === idx ? { ...p, step, status, error } : p))
+  }
 
   async function submitBulk() {
-    setBulkSaving(true); setBulkMsg(null)
     const valid = bulkRows.filter(r => r.name.trim())
-    if (!valid.length) { setBulkMsg({ type: "err", text: "En az bir ürün adı giriniz" }); setBulkSaving(false); return }
-    const res = await fetch("/api/admin/products/bulk", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        products: valid.map(r => ({
-          name: r.name.trim(),
-          price: r.price === "" ? 0 : Number(r.price),
-          category: r.category.trim() || undefined,
-          type: bulkType,
-          licenseModel: bulkLicModel,
-          enableLicense: bulkEnableLic,
-          enableObf: bulkEnableObf,
-        })),
-      }),
-    })
-    const data = await res.json()
-    setBulkSaving(false)
-    if (!res.ok) { setBulkMsg({ type: "err", text: data.error ?? "Hata" }); return }
-    const errNote = data.errors?.length ? ` (${data.errors.length} hata)` : ""
-    setBulkMsg({ type: data.created > 0 ? "ok" : "err", text: `${data.created} ürün eklendi${errNote}` })
-    if (data.created > 0) {
-      fetch("/api/admin/products").then(r => r.json()).then(d => setProducts(Array.isArray(d) ? d : [])).catch(() => {})
-      setBulkRows([{ id: Date.now(), name: "", price: "", category: "" }])
+    if (!valid.length) return
+    setBulkRunning(true); setBulkDone(false)
+    setBulkProgress(valid.map(r => ({ name: r.name.trim(), step: "Bekliyor...", status: "wait" })))
+
+    for (let i = 0; i < valid.length; i++) {
+      const row = valid[i]
+      try {
+        // 1. Ürün oluştur
+        setProgress(i, "Ürün oluşturuluyor...", "running")
+        const pRes = await fetch("/api/admin/products", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: row.name.trim(),
+            price: row.price === "" ? 0 : Number(row.price),
+            type: row.type,
+            licenseModel: bulkLicModel,
+            enableLicense: bulkEnableLic,
+            enableObf: bulkEnableObf,
+          }),
+        })
+        if (!pRes.ok) { const d = await pRes.json(); throw new Error(d.error ?? "Ürün oluşturulamadı"); }
+        const product = await pRes.json()
+
+        // 2. JAR yükle (varsa)
+        if (row.jar) {
+          setProgress(i, "JAR yükleniyor...", "running")
+          const jarFd = new FormData(); jarFd.append("file", row.jar)
+          const jarRes = await fetch(`/api/admin/products/${product.id}/versions/upload`, { method: "POST", body: jarFd })
+          const jarData = await jarRes.json()
+          if (!jarData.blobKey) throw new Error("JAR yüklenemedi")
+
+          // 3. Versiyon oluştur
+          setProgress(i, "Versiyon oluşturuluyor...", "running")
+          const vRes = await fetch(`/api/admin/products/${product.id}/versions`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ version: "v1.0.0", blobKey: jarData.blobKey, fileKey: jarData.blobKey, published: true }),
+          })
+          if (!vRes.ok) throw new Error("Versiyon oluşturulamadı")
+          const { version: ver } = await vRes.json()
+
+          // 4. Obfuscation (istenirse)
+          if (bulkEnableObf && ver?.id) {
+            setProgress(i, "Obfuscation başlatılıyor...", "running")
+            await fetch(`/api/admin/products/${product.id}/versions/${ver.id}/obfuscate`, {
+              method: "POST", headers: { "Content-Type": "application/json" },
+            }).catch(() => {})
+            setProgress(i, "Obfuscation kuyruğa alındı", "done")
+          } else {
+            setProgress(i, "Tamamlandı", "done")
+          }
+        } else {
+          setProgress(i, "Tamamlandı (JAR yok)", "done")
+        }
+      } catch (err: unknown) {
+        setProgress(i, "Hata", "err", err instanceof Error ? err.message : String(err))
+      }
     }
+
+    setBulkRunning(false); setBulkDone(true)
+    fetch("/api/admin/products").then(r => r.json()).then(d => setProducts(Array.isArray(d) ? d : [])).catch(() => {})
+  }
+
+  function resetBulk() {
+    setBulkProgress([]); setBulkDone(false); setBulkRunning(false)
+    setBulkRows([{ id: Date.now(), name: "", price: "", type: "minecraft_plugin", jar: null }])
   }
 
   useEffect(() => {
@@ -686,106 +738,150 @@ export default function AdminProductsPage() {
       {/* Bulk Add Modal */}
       {bulkOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="w-full max-w-3xl rounded-2xl border border-white/[0.08] bg-[#0a0a0a] shadow-2xl flex flex-col max-h-[90vh]">
+          <div className="w-full max-w-4xl rounded-2xl border border-white/[0.08] bg-[#0a0a0a] shadow-2xl flex flex-col max-h-[90vh]">
             <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06] shrink-0">
               <h2 className="text-sm font-bold text-white/80">Toplu Ürün Ekle</h2>
-              <button onClick={() => setBulkOpen(false)} className="text-white/30 hover:text-white transition-colors">✕</button>
+              <button onClick={() => { if (!bulkRunning) setBulkOpen(false) }} className="text-white/30 hover:text-white transition-colors">✕</button>
             </div>
 
-            {/* Shared settings */}
-            <div className="px-6 py-4 border-b border-white/[0.04] shrink-0 grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div>
-                <label className="block text-[10px] font-bold text-white/30 uppercase tracking-wider mb-1">Tür</label>
-                <select className={inputCls + " text-xs"} value={bulkType} onChange={e => setBulkType(e.target.value)}>
-                  {TYPE_OPTIONS.map(o => <option key={o.value} value={o.value} className="bg-[#111]">{o.label}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-[10px] font-bold text-white/30 uppercase tracking-wider mb-1">Lisans Modeli</label>
-                <select className={inputCls + " text-xs"} value={bulkLicModel} onChange={e => setBulkLicModel(e.target.value)}>
-                  <option value="lifetime" className="bg-[#111]">Ömürlük</option>
-                  <option value="subscription" className="bg-[#111]">Abonelik</option>
-                  <option value="custom" className="bg-[#111]">Özel</option>
-                </select>
-              </div>
-              <div className="flex items-end">
-                <label className="flex items-center gap-2 cursor-pointer pb-0.5">
-                  <input type="checkbox" checked={bulkEnableLic} onChange={e => setBulkEnableLic(e.target.checked)} className="accent-indigo-500" />
-                  <span className="text-xs text-white/50">Lisans Aktif</span>
-                </label>
-              </div>
-              <div className="flex items-end">
-                <label className="flex items-center gap-2 cursor-pointer pb-0.5">
-                  <input type="checkbox" checked={bulkEnableObf} onChange={e => setBulkEnableObf(e.target.checked)} className="accent-indigo-500" />
-                  <span className="text-xs text-white/50">Obfuscation</span>
-                </label>
-              </div>
-            </div>
+            {/* Progress view */}
+            {(bulkRunning || bulkDone) ? (
+              <>
+                <div className="flex-1 overflow-y-auto px-6 py-4 space-y-2">
+                  {bulkProgress.map((p, i) => (
+                    <div key={i} className={cn(
+                      "flex items-center gap-3 rounded-xl border px-4 py-3 transition-all",
+                      p.status === "done" ? "border-emerald-500/20 bg-emerald-500/[0.04]" :
+                      p.status === "err"  ? "border-red-500/20 bg-red-500/[0.04]" :
+                      p.status === "running" ? "border-indigo-500/20 bg-indigo-500/[0.04]" :
+                      "border-white/[0.04] bg-transparent"
+                    )}>
+                      <div className="shrink-0">
+                        {p.status === "done"    && <Icon icon="carbon:checkmark-filled" className="text-emerald-400" width={16} />}
+                        {p.status === "err"     && <Icon icon="carbon:close-filled" className="text-red-400" width={16} />}
+                        {p.status === "running" && <Icon icon="carbon:circle-dash" className="text-indigo-400 animate-spin" width={16} />}
+                        {p.status === "wait"    && <Icon icon="carbon:circle-dash" className="text-white/20" width={16} />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold text-white/80 truncate">{p.name}</p>
+                        <p className={cn("text-[10px]", p.status === "err" ? "text-red-400" : p.status === "done" ? "text-emerald-400" : "text-white/35")}>{p.error ?? p.step}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="px-6 py-4 border-t border-white/[0.06] shrink-0 flex justify-between items-center">
+                  <p className="text-xs text-white/30">
+                    {bulkDone ? `${bulkProgress.filter(p => p.status === "done").length}/${bulkProgress.length} tamamlandı` : "İşleniyor..."}
+                  </p>
+                  {bulkDone && (
+                    <div className="flex gap-2">
+                      <button onClick={resetBulk} className="rounded-xl border border-white/[0.07] px-4 py-2 text-xs text-white/40 hover:text-white transition-all">Yeniden Ekle</button>
+                      <button onClick={() => { resetBulk(); setBulkOpen(false) }} className="rounded-xl bg-white text-black px-5 py-2 text-xs font-bold hover:bg-white/90 transition-all">Kapat</button>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Shared settings */}
+                <div className="px-6 py-4 border-b border-white/[0.04] shrink-0 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div>
+                    <label className="block text-[10px] font-bold text-white/30 uppercase tracking-wider mb-1">Lisans Modeli</label>
+                    <select className={inputCls + " text-xs"} value={bulkLicModel} onChange={e => setBulkLicModel(e.target.value)}>
+                      <option value="lifetime" className="bg-[#111]">Ömürlük</option>
+                      <option value="subscription" className="bg-[#111]">Abonelik</option>
+                      <option value="custom" className="bg-[#111]">Özel</option>
+                    </select>
+                  </div>
+                  <div className="flex items-end">
+                    <label className="flex items-center gap-2 cursor-pointer pb-0.5">
+                      <input type="checkbox" checked={bulkEnableLic} onChange={e => setBulkEnableLic(e.target.checked)} className="accent-indigo-500" />
+                      <span className="text-xs text-white/50">Lisans Aktif</span>
+                    </label>
+                  </div>
+                  <div className="flex items-end">
+                    <label className="flex items-center gap-2 cursor-pointer pb-0.5">
+                      <input type="checkbox" checked={bulkEnableObf} onChange={e => setBulkEnableObf(e.target.checked)} className="accent-indigo-500" />
+                      <span className="text-xs text-white/50">Obfuscation</span>
+                    </label>
+                  </div>
+                </div>
 
-            {/* Product rows */}
-            <div className="flex-1 overflow-y-auto px-6 py-4 space-y-2">
-              <div className="grid grid-cols-[1fr_100px_120px_28px] gap-2 mb-1">
-                <span className="text-[10px] font-bold text-white/25 uppercase tracking-wider">Ürün Adı *</span>
-                <span className="text-[10px] font-bold text-white/25 uppercase tracking-wider">Fiyat (₺)</span>
-                <span className="text-[10px] font-bold text-white/25 uppercase tracking-wider">Kategori</span>
-                <span />
-              </div>
-              {bulkRows.map(row => (
-                <div key={row.id} className="grid grid-cols-[1fr_100px_120px_28px] gap-2 items-center">
-                  <input
-                    className={inputCls + " py-2 text-xs"}
-                    placeholder="Ürün adı"
-                    value={row.name}
-                    onChange={e => bulkSetRow(row.id, "name", e.target.value)}
-                  />
-                  <input
-                    type="number"
-                    className={inputCls + " py-2 text-xs"}
-                    placeholder="0"
-                    value={row.price}
-                    onChange={e => bulkSetRow(row.id, "price", e.target.value)}
-                  />
-                  <input
-                    className={inputCls + " py-2 text-xs"}
-                    placeholder="FiveM..."
-                    value={row.category}
-                    onChange={e => bulkSetRow(row.id, "category", e.target.value)}
-                  />
-                  <button
-                    onClick={() => bulkRemoveRow(row.id)}
-                    disabled={bulkRows.length === 1}
-                    className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/[0.06] text-white/20 hover:text-red-400 hover:border-red-500/30 transition-all disabled:opacity-20"
-                  >
-                    <Icon icon="carbon:trash-can" width={12} />
+                {/* Product rows */}
+                <div className="flex-1 overflow-y-auto px-6 py-4 space-y-2">
+                  <div className="grid grid-cols-[1fr_90px_120px_1fr_28px] gap-2 mb-1">
+                    <span className="text-[10px] font-bold text-white/25 uppercase tracking-wider">Ürün Adı *</span>
+                    <span className="text-[10px] font-bold text-white/25 uppercase tracking-wider">Fiyat (₺)</span>
+                    <span className="text-[10px] font-bold text-white/25 uppercase tracking-wider">Tür</span>
+                    <span className="text-[10px] font-bold text-white/25 uppercase tracking-wider">JAR Dosyası</span>
+                    <span />
+                  </div>
+                  {bulkRows.map(row => (
+                    <div key={row.id} className="grid grid-cols-[1fr_90px_120px_1fr_28px] gap-2 items-center">
+                      <input
+                        className={inputCls + " py-2 text-xs"}
+                        placeholder="Ürün adı"
+                        value={row.name}
+                        onChange={e => bulkSetRow(row.id, "name", e.target.value)}
+                      />
+                      <input
+                        type="number"
+                        className={inputCls + " py-2 text-xs"}
+                        placeholder="0"
+                        value={row.price}
+                        onChange={e => bulkSetRow(row.id, "price", e.target.value)}
+                      />
+                      <select
+                        className={inputCls + " py-2 text-xs"}
+                        value={row.type}
+                        onChange={e => bulkSetRow(row.id, "type", e.target.value)}
+                      >
+                        {TYPE_OPTIONS.map(o => <option key={o.value} value={o.value} className="bg-[#111]">{o.label}</option>)}
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => { const el = bulkJarRefs.current.get(row.id); el?.click() }}
+                        className={cn(
+                          "flex items-center gap-2 rounded-xl border px-3 py-2 text-xs w-full transition-all",
+                          row.jar ? "border-emerald-500/30 bg-emerald-500/[0.05] text-emerald-400" : "border-white/[0.07] text-white/30 hover:border-white/20"
+                        )}
+                      >
+                        <Icon icon={row.jar ? "carbon:document-software" : "carbon:upload"} width={12} />
+                        <span className="truncate">{row.jar ? row.jar.name : "JAR seç..."}</span>
+                        <input
+                          type="file" accept=".jar" className="hidden"
+                          ref={el => { if (el) bulkJarRefs.current.set(row.id, el) }}
+                          onChange={e => bulkSetJar(row.id, e.target.files?.[0] ?? null)}
+                        />
+                      </button>
+                      <button
+                        onClick={() => bulkRemoveRow(row.id)}
+                        disabled={bulkRows.length === 1}
+                        className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/[0.06] text-white/20 hover:text-red-400 hover:border-red-500/30 transition-all disabled:opacity-20"
+                      >
+                        <Icon icon="carbon:trash-can" width={12} />
+                      </button>
+                    </div>
+                  ))}
+                  <button onClick={bulkAddRow} className="mt-1 flex items-center gap-1.5 text-xs text-white/30 hover:text-white/60 transition-colors">
+                    <Icon icon="carbon:add" width={13} /> Satır Ekle
                   </button>
                 </div>
-              ))}
-              <button
-                onClick={bulkAddRow}
-                className="mt-1 flex items-center gap-1.5 text-xs text-white/30 hover:text-white/60 transition-colors"
-              >
-                <Icon icon="carbon:add" width={13} /> Satır Ekle
-              </button>
-            </div>
 
-            {/* Footer */}
-            <div className="px-6 py-4 border-t border-white/[0.06] shrink-0 flex items-center justify-between gap-3">
-              <div className="flex-1">
-                {bulkMsg && (
-                  <p className={cn("text-xs font-medium", bulkMsg.type === "ok" ? "text-emerald-400" : "text-red-400")}>{bulkMsg.text}</p>
-                )}
-              </div>
-              <div className="flex gap-2">
-                <button onClick={() => setBulkOpen(false)} className="rounded-xl border border-white/[0.07] px-4 py-2 text-xs text-white/40 hover:text-white transition-all">İptal</button>
-                <button
-                  onClick={submitBulk}
-                  disabled={bulkSaving}
-                  className="flex items-center gap-2 rounded-xl bg-white text-black px-5 py-2 text-xs font-bold hover:bg-white/90 disabled:opacity-50 transition-all"
-                >
-                  {bulkSaving ? <><Icon icon="carbon:circle-dash" width={13} className="animate-spin" /> Ekleniyor...</> : `Toplu Ekle (${bulkRows.filter(r => r.name.trim()).length} ürün)`}
-                </button>
-              </div>
-            </div>
+                {/* Footer */}
+                <div className="px-6 py-4 border-t border-white/[0.06] shrink-0 flex items-center justify-end gap-2">
+                  <button onClick={() => setBulkOpen(false)} className="rounded-xl border border-white/[0.07] px-4 py-2 text-xs text-white/40 hover:text-white transition-all">İptal</button>
+                  <button
+                    onClick={submitBulk}
+                    disabled={!bulkRows.some(r => r.name.trim())}
+                    className="flex items-center gap-2 rounded-xl bg-white text-black px-5 py-2 text-xs font-bold hover:bg-white/90 disabled:opacity-50 transition-all"
+                  >
+                    <Icon icon="carbon:rocket" width={13} />
+                    {`Başlat (${bulkRows.filter(r => r.name.trim()).length} ürün)`}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
