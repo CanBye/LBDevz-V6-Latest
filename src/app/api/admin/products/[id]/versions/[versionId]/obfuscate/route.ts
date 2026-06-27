@@ -10,7 +10,7 @@ import { existsSync } from "fs"
 const OBF_WORKER_JAR = join(process.cwd(), "apps", "obf-worker", "dist", "obf-worker.jar")
 const DOWNLOADS_DIR  = join(process.cwd(), "public", "downloads")
 const API_HOST       = process.env.LICENSE_API_HOST ?? "localhost"
-const API_PORT       = process.env.PORT ?? "3000"
+const API_PORT       = process.env.LICENSE_API_PORT ?? process.env.PORT ?? "3000"
 // http in dev, https in production behind a TLS terminator. Baked into the loader
 // so it calls the validate endpoint over the right scheme.
 const API_SCHEME     = process.env.LICENSE_API_SCHEME ?? (process.env.NODE_ENV === "production" ? "https" : "http")
