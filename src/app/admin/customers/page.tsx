@@ -40,6 +40,9 @@ export default function AdminCustomersPage() {
   const [balNote,    setBalNote]    = useState("")
   const [grantProd,  setGrantProd]  = useState("")
   const [grantSeats, setGrantSeats] = useState("1")
+  const [grantProds, setGrantProds] = useState<string[]>([])
+  const [bulkLicMsg, setBulkLicMsg] = useState<{ ok: boolean; text: string } | null>(null)
+  const [bulkLicLoad,setBulkLicLoad]= useState(false)
   const [ipLicId,    setIpLicId]    = useState("")
   const [ipSlots,    setIpSlots]    = useState("1")
 
@@ -83,7 +86,24 @@ export default function AdminCustomersPage() {
     fetch("/api/admin/customers").then(r => r.json()).then(d => setCustomers(Array.isArray(d) ? d : [])).catch(() => {})
   }
 
-  const filtered = customers.filter(c =>
+  async function handleBulkLicense() {
+    if (!selected || grantProds.length === 0) return
+    setBulkLicLoad(true); setBulkLicMsg(null)
+    const res = await fetch(`/api/admin/customers/${selected.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "grantLicenseBulk", productIds: grantProds, seatLimit: grantSeats ? Number(grantSeats) : undefined }),
+    })
+    const data = await res.json()
+    setBulkLicLoad(false)
+    if (!res.ok) { setBulkLicMsg({ ok: false, text: data.error ?? "Hata" }); return }
+    setBulkLicMsg({ ok: true, text: `${data.count} lisans tanımlandı` })
+    setGrantProds([])
+    fetch(`/api/admin/customers/${selected.id}`).then(r => r.json()).then(setDetail).catch(() => {})
+    fetch("/api/admin/customers").then(r => r.json()).then(d => setCustomers(Array.isArray(d) ? d : [])).catch(() => {})
+  }
+
+    const filtered = customers.filter(c =>
     (c.name ?? "").toLowerCase().includes(search.toLowerCase()) ||
     (c.username ?? "").toLowerCase().includes(search.toLowerCase()) ||
     c.email.toLowerCase().includes(search.toLowerCase())
@@ -202,23 +222,39 @@ export default function AdminCustomersPage() {
                   </button>
                 </div>
 
-                {/* Grant license */}
-                <div className="rounded-xl border border-white/[0.07] bg-[#0a0a0a] p-4 space-y-3">
-                  <p className="text-[10px] font-bold text-white/30 uppercase tracking-wider">Lisans Ver</p>
-                  <select className={inputCls} value={grantProd} onChange={e => setGrantProd(e.target.value)}>
-                    <option value="" className="bg-[#111]">Ürün seç...</option>
-                    {products.map(p => <option key={p.id} value={p.id} className="bg-[#111]">{p.name}</option>)}
-                  </select>
+                {/* Grant license — multi-product */}
+                <div className="rounded-xl border border-white/[0.07] bg-[#0a0a0a] p-4 space-y-3 sm:col-span-2">
+                  <div className="flex items-center justify-between">
+                    <p className="text-[10px] font-bold text-white/30 uppercase tracking-wider">Lisans Ver</p>
+                    <span className="text-[10px] text-white/20">{grantProds.length} seçili</span>
+                  </div>
+                  <div className="max-h-36 overflow-y-auto rounded-xl border border-white/[0.06] bg-[#0d0d0d] p-2 space-y-0.5">
+                    {products.map(p => (
+                      <label key={p.id} className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-white/[0.03] cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="accent-indigo-500"
+                          checked={grantProds.includes(p.id)}
+                          onChange={e => setGrantProds(prev => e.target.checked ? [...prev, p.id] : prev.filter(x => x !== p.id))}
+                        />
+                        <span className="text-xs text-white/60">{p.name}</span>
+                      </label>
+                    ))}
+                    {products.length === 0 && <p className="text-xs text-white/20 px-2 py-1">Ürün yok</p>}
+                  </div>
                   <div className="flex gap-2 items-center">
                     <label className="text-[10px] text-white/30 whitespace-nowrap">IP Limiti:</label>
                     <input className={cn(inputCls, "flex-1")} type="number" min="1" max="99" value={grantSeats} onChange={e => setGrantSeats(e.target.value)} />
                   </div>
+                  {bulkLicMsg && (
+                    <p className={cn("text-xs font-medium", bulkLicMsg.ok ? "text-emerald-400" : "text-red-400")}>{bulkLicMsg.text}</p>
+                  )}
                   <button
-                    onClick={() => doAction("grantLicense", { productId: grantProd, seatLimit: Number(grantSeats) })}
-                    disabled={actionLoad || !grantProd}
+                    onClick={handleBulkLicense}
+                    disabled={bulkLicLoad || grantProds.length === 0}
                     className="w-full rounded-xl bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 py-2 text-xs font-bold hover:bg-indigo-500/30 transition-all disabled:opacity-40"
                   >
-                    {actionLoad ? "..." : "Lisans Ver"}
+                    {bulkLicLoad ? "..." : grantProds.length > 0 ? `${grantProds.length} Ürüne Lisans Ver` : "Ürün Seç"}
                   </button>
                 </div>
 

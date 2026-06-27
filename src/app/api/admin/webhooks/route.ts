@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     url,
     template: template ?? "",
     enabled: true,
-    createdBy: session.user!.id!,
-  }).returning()
+    createdBy: session.user?.id ?? null,
+  } as never).returning()
   return NextResponse.json(row, { status: 201 })
 }

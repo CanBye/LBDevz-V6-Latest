@@ -97,6 +97,42 @@ export async function PATCH(req: NextRequest, { params }: Ctx) {
     return NextResponse.json({ ok: true, licenseKey: lic.licenseKey })
   }
 
+  // ── Grant multiple licenses at once ─────────────────────────────────────
+  if (action === "grantLicenseBulk") {
+    const { productIds, seatLimit } = body
+    if (!Array.isArray(productIds) || productIds.length === 0) {
+      return NextResponse.json({ error: "En az bir ürün ID gerekli" }, { status: 400 })
+    }
+
+    const granted: { productId: string; productName: string; licenseKey: string }[] = []
+    const errors: string[] = []
+
+    for (const productId of productIds) {
+      try {
+        const [product] = await db.select().from(products).where(eq(products.id, productId)).limit(1)
+        if (!product) { errors.push(`${productId}: ürün bulunamadı`); continue }
+
+        const licenseKey = `LBD-${nanoid(8).toUpperCase()}-${nanoid(8).toUpperCase()}`
+        await db.insert(licenses).values({
+          userId:              id,
+          productId,
+          licenseKey,
+          licenseModel:        product.licenseModel as never,
+          periodDays:          product.periodDays,
+          seatLimit:           seatLimit ?? product.seatLimit ?? 1,
+          autoRenew:           false,
+          renewalPriceCredits: null,
+          status:              "active" as never,
+        })
+        granted.push({ productId, productName: product.name, licenseKey })
+      } catch (err) {
+        errors.push(`${productId}: ${err instanceof Error ? err.message : String(err)}`)
+      }
+    }
+
+    return NextResponse.json({ ok: true, count: granted.length, licenses: granted, errors })
+  }
+
   // ── Add IP slots to a license ────────────────────────────────────────────
   if (action === "addIpSlots") {
     const { licenseId, slots } = body

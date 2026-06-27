@@ -67,10 +67,21 @@ export default function AdminWebhooksPage() {
 
   async function testHook(id: string) {
     setTesting(id); setMsg(null)
-    const res = await fetch(`/api/admin/webhooks/${id}/test`, { method: "POST" })
-    const data = await res.json()
-    setTesting(null)
-    setMsg({ ok: res.ok, text: res.ok ? "Test başarılı ✓" : `Başarısız: ${data.error}` })
+    try {
+      const res = await fetch(`/api/admin/webhooks/${id}/test`, { method: "POST" })
+      const data = await res.json()
+      setTesting(null)
+      if (res.ok && data.ok) {
+        setMsg({ ok: true, text: `Test OK — HTTP ${data.status}` })
+      } else if (res.ok && !data.ok) {
+        setMsg({ ok: false, text: `Hedef sunucu reddetti — HTTP ${data.status}` })
+      } else {
+        setMsg({ ok: false, text: `Hata: ${data.error ?? "Bilinmeyen hata"}` })
+      }
+    } catch {
+      setTesting(null)
+      setMsg({ ok: false, text: "İstek gönderilemedi — ağ hatası" })
+    }
   }
 
   return (
