@@ -5,6 +5,9 @@ import { join } from "path"
 import { existsSync } from "fs"
 import { randomUUID } from "crypto"
 
+export const maxDuration = 120
+export const dynamic = "force-dynamic"
+
 const DOWNLOADS_DIR = join(process.cwd(), "public", "downloads")
 
 export async function POST(
