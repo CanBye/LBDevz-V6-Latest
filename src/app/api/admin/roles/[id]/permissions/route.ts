@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { requireAdmin } from "@/lib/admin"
+import { requirePermission, ADMIN_PERMISSIONS } from "@/lib/admin"
 import { db } from "@/lib/db"
 import { rolePermissions, permissions } from "@lbdevz/db"
 import { eq } from "drizzle-orm"
@@ -8,7 +8,7 @@ type Ctx = { params: Promise<{ id: string }> }
 
 // GET /api/admin/roles/[id]/permissions — list all permissions with assigned flag
 export async function GET(_req: NextRequest, { params }: Ctx) {
-  const session = await requireAdmin()
+  const session = await requirePermission(ADMIN_PERMISSIONS.ROLES)
   if (!session) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 })
 
   const { id: roleId } = await params
@@ -29,7 +29,7 @@ export async function GET(_req: NextRequest, { params }: Ctx) {
 
 // POST /api/admin/roles/[id]/permissions — set permissions for a role (replace all)
 export async function POST(req: NextRequest, { params }: Ctx) {
-  const session = await requireAdmin()
+  const session = await requirePermission(ADMIN_PERMISSIONS.ROLES)
   if (!session) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 })
 
   const { id: roleId } = await params
