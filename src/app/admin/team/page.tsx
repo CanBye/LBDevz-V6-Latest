@@ -64,6 +64,21 @@ export default function AdminTeamPage() {
     setLoading(true)
     fetch("/api/admin/team").then(r => r.json()).then(d => { setMembers(Array.isArray(d) ? d : []); setLoading(false) }).catch(() => setLoading(false))
   }
+
+  async function moveOrder(id: string, dir: -1 | 1) {
+    const idx = members.findIndex(m => m.id === id)
+    const target = members[idx + dir]
+    if (!target) return
+    // Swap order values
+    const aOrder = members[idx].order
+    const bOrder = target.order
+    const newA = bOrder === aOrder ? bOrder + dir : bOrder
+    await Promise.all([
+      fetch(`/api/admin/team/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ order: newA }) }),
+      fetch(`/api/admin/team/${target.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ order: aOrder }) }),
+    ])
+    load()
+  }
   useEffect(() => { load() }, [])
 
   // Kullanıcı araması (debounce'lu)
@@ -319,6 +334,23 @@ export default function AdminTeamPage() {
                 <p className="text-[10px] text-white/30 uppercase tracking-wider">{m.role}{m.slug ? ` · /ekip/${m.slug}` : ""}</p>
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
+                {/* Sıra göstergesi */}
+                <span className="text-[10px] font-bold text-white/20 w-5 text-center">{m.order}</span>
+                {/* Yukarı / Aşağı */}
+                <button
+                  onClick={() => moveOrder(m.id, -1)}
+                  disabled={members[0]?.id === m.id}
+                  className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/[0.06] text-white/30 hover:text-indigo-400 hover:border-indigo-500/30 transition-all disabled:opacity-20"
+                >
+                  <Icon icon="carbon:chevron-up" width={13} />
+                </button>
+                <button
+                  onClick={() => moveOrder(m.id, 1)}
+                  disabled={members[members.length - 1]?.id === m.id}
+                  className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/[0.06] text-white/30 hover:text-indigo-400 hover:border-indigo-500/30 transition-all disabled:opacity-20"
+                >
+                  <Icon icon="carbon:chevron-down" width={13} />
+                </button>
                 {m.slug && (
                   <a href={`/ekip/${m.slug}`} target="_blank" rel="noopener noreferrer"
                     className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/[0.06] text-white/30 hover:text-white/70 transition-all">
