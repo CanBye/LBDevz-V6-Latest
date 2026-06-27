@@ -67,6 +67,7 @@ export default function AdminProductsPage() {
   const [type,        setType]        = useState("minecraft_plugin")
   const [licenseModel,setLicenseModel]= useState("lifetime")
   const [enableObf,   setEnableObf]   = useState(true)
+  const [enableLicense, setEnableLicense] = useState(true)
   const [featured,    setFeatured]    = useState(false)
   const [selectedDevs,setSelectedDevs]= useState<string[]>([])
 
@@ -248,7 +249,7 @@ export default function AdminProductsPage() {
         price: price === "" ? 0 : Number(price),
         type,
         licenseModel,
-        enableLicense: true,
+        enableLicense,
         enableObf,
         featured,
         imageUrl: imageUrls[0],
@@ -300,7 +301,7 @@ export default function AdminProductsPage() {
     setSaving(false)
     setMsg({ type: "ok", text: `"${name}" oluşturuldu — onay bekliyor.` })
     setName(""); setDescription(""); setPrice(""); setType("minecraft_plugin")
-    setLicenseModel("lifetime"); setEnableObf(true); setFeatured(false)
+    setLicenseModel("lifetime"); setEnableObf(true); setEnableLicense(true); setFeatured(false)
     setSelectedDevs([]); setImages([]); setJarFile(null); setJarVersion(""); setSrcFile(null)
     fetch("/api/admin/products").then(r => r.json()).then(d => setProducts(Array.isArray(d) ? d : [])).catch(() => {})
   }
@@ -486,7 +487,7 @@ export default function AdminProductsPage() {
             <div className="flex gap-3">
               {[
                 { label: "Obfuscation", state: enableObf, set: setEnableObf, color: "indigo" },
-                { label: "Lisans", state: true, set: () => {}, color: "emerald", disabled: true },
+                { label: "Lisans", state: enableLicense, set: setEnableLicense, color: "emerald", disabled: false },
               ].map(({ label, state, set, color, disabled }) => (
                 <button
                   key={label}

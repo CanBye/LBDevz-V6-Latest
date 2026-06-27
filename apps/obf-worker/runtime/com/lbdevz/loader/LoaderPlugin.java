@@ -41,6 +41,13 @@ public class LoaderPlugin extends JavaPlugin {
             return;
         }
 
+        // If SKIP_LICENSE is baked in, run without license enforcement (obf-only mode).
+        if ("SKIP_LICENSE".equals(LIC_ENV)) {
+            log.info("[LBDevz] Lisanssiz mod — sadece obfuscation aktif.");
+            startPlugin(null);
+            return;
+        }
+
         log.info("[LBDevz] Verifying license...");
 
         String licenseKey = getLicenseKey();
@@ -135,41 +142,35 @@ public class LoaderPlugin extends JavaPlugin {
             log.warning("      Lisanslarim sayfasindan indirebilirsiniz.");
         }
         log.info("==============================================");
+        startPlugin(result);
+    }
+
+    private void startPlugin(LicenseValidator.ValidateResult result) {
+        Logger log = getLogger();
         log.info("[LBDevz] Sifrelenmiyor...");
-
         try {
-            // 3. K = Kserver XOR Kbaked  (split-key: neither half alone decrypts)
+            // K = Kserver XOR Kbaked  (split-key: neither half alone decrypts)
+            // In skip-license mode, keyHalf is null — use kBaked directly as the full key.
             byte[] kBaked = fromHex(KBAKED_HEX);
-            byte[] kFull  = xorKeys(result.keyHalf, kBaked);
-            Arrays.fill(kBaked, (byte) 0);
+            byte[] kFull  = (result != null && result.keyHalf != null)
+                ? xorKeys(result.keyHalf, kBaked)
+                : kBaked;
+            if (result != null && result.keyHalf != null) Arrays.fill(kBaked, (byte) 0);
 
-            // 5. Load protected.dat from JAR
-            InputStream pdat = getClass().getClassLoader()
-                .getResourceAsStream("protected.dat");
-            if (pdat == null) {
-                throw new FileNotFoundException("protected.dat not found in JAR");
-            }
+            InputStream pdat = getClass().getClassLoader().getResourceAsStream("protected.dat");
+            if (pdat == null) throw new FileNotFoundException("protected.dat not found in JAR");
             byte[] protectedDat = pdat.readAllBytes();
             pdat.close();
 
-            // 6. Decrypt + load classes
-            ecl = new EncryptedClassLoader(protectedDat, kFull,
-                getClass().getClassLoader());
+            ecl = new EncryptedClassLoader(protectedDat, kFull, getClass().getClassLoader());
             Arrays.fill(kFull, (byte) 0);
 
             log.info("[LBDevz] Loaded " + ecl.getClassNames().size() + " classes.");
 
-            // 7. Instantiate real plugin bypassing constructor (which checks classloader),
-            //    then inject JavaPlugin context so getServer() etc. work correctly.
             Class<?> mainClass = ecl.loadClass(MAIN_CLASS);
             realPlugin = unsafeAllocate(mainClass);
             injectPluginContext(realPlugin);
-
-            // Re-point all registered commands from LoaderPlugin → realPlugin.
-            // Paper checks command.getPlugin() == this in getCommand(), so the
-            // owner must match the real plugin instance, not LoaderPlugin.
             reownCommands(realPlugin);
-
             invokeIfPresent(realPlugin, "onEnable");
             log.info("[LBDevz] Plugin started successfully.");
 

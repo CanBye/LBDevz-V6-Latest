@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { requirePermission, ADMIN_PERMISSIONS } from "@/lib/admin"
 import { db } from "@/lib/db"
-import { productVersions } from "@lbdevz/db"
+import { productVersions, products } from "@lbdevz/db"
 import { eq } from "drizzle-orm"
 import { spawn } from "child_process"
 import { join } from "path"
@@ -47,6 +47,11 @@ export async function POST(
     return NextResponse.json({ error: "Plugin file not found on server" }, { status: 404 })
   }
 
+  // Check if license is enabled for this product
+  const [product] = await db.select({ enableLicense: products.enableLicense })
+    .from(products).where(eq(products.id, productId)).limit(1)
+  const licEnvArg = product?.enableLicense === false ? "SKIP_LICENSE" : "LICENSE_KEY"
+
   // Mark as processing
   await db.update(productVersions)
     .set({ obfStatus: "processing" })
@@ -63,7 +68,7 @@ export async function POST(
     productId,
     API_HOST,
     API_PORT,
-    "LICENSE_KEY",
+    licEnvArg,
     "",            // mainClass: auto-detect from plugin.yml
     API_SCHEME,
     ED25519_PUB,
