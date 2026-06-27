@@ -355,7 +355,7 @@ export default function AdminProductsPage() {
           <p className="text-xs text-white/30 mt-0.5 uppercase tracking-widest font-mono">Admin · Products</p>
         </div>
         <button
-          onClick={() => { setBulkOpen(true); setBulkMsg(null) }}
+          onClick={() => { setBulkOpen(true); resetBulk() }}
           className="flex items-center gap-2 rounded-xl border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 px-4 py-2 text-xs font-bold hover:bg-indigo-500/20 transition-all"
         >
           <Icon icon="carbon:add" width={14} />
