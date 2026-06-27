@@ -72,9 +72,10 @@ export async function POST(req: NextRequest) {
 
     const [license] = await db
       .select({
-        license:   licenses,
+        license:     licenses,
         productName: products.name,
         productId:   products.id,
+        ownerName:   users.name,
       })
       .from(licenses)
       .leftJoin(products, eq(licenses.productId, products.id))
@@ -169,6 +170,7 @@ export async function POST(req: NextRequest) {
       valid:        true,
       status:       license.license.status,
       product:      license.productName ?? "Unknown Product",
+      ownerName:    license.ownerName ?? null,
       expiresAt:    license.license.expiresAt,
       latestVersion: latestVersion?.version ?? null,
       message:      "License is valid and active",

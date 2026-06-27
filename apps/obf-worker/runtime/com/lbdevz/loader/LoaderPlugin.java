@@ -130,7 +130,8 @@ public class LoaderPlugin extends JavaPlugin {
         log.info("  Lisans     : " + censoredKey);
         log.info("  Sahip      : " + owner);
         if (latest != null && !latest.equals(current)) {
-            log.warning("  [!] GUNCELLEME MEVCUT: v" + latest + " yayinda!");
+            String latestDisplay = latest.startsWith("v") ? latest : "v" + latest;
+            log.warning("  [!] GUNCELLEME MEVCUT: " + latestDisplay + " yayinda!");
             log.warning("      Lisanslarim sayfasindan indirebilirsiniz.");
         }
         log.info("==============================================");
