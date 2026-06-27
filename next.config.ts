@@ -49,7 +49,7 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["@iconify/react", "framer-motion"],
     serverActions: {
-      bodySizeLimit: "100mb",
+      bodySizeLimit: "200mb",
     },
   },
   images: {
