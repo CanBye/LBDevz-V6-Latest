@@ -34,20 +34,21 @@ export async function sendDiscordNotification(embed: {
 }
 
 export const notify = {
-  purchase: (user: string, product: string, amount: number, licenseKey: string, userImage?: string | null) =>
-    sendDiscordNotification({
-      author: userImage
-        ? { name: user, icon_url: userImage }
-        : { name: user },
+  purchase: (user: string, product: string, amount: number, licenseKey: string, userImage?: string | null) => {
+    const fields: Array<{ name: string; value: string; inline?: boolean }> = [
+      { name: "🛒 Ürün", value: product, inline: true },
+    ]
+    if (amount > 0) {
+      fields.push({ name: "💰 Tutar", value: `₺${amount}`, inline: true })
+    }
+    return sendDiscordNotification({
+      author: userImage ? { name: user, icon_url: userImage } : { name: user },
       title: "💳 Yeni Satın Alma — Hayırlı Olsun!",
-      description: `**${user}** yeni bir ürün edindi, hayırlı olsun! 🎉`,
+      description: `**${user}**, **${product}** ürününü edindi, hayırlı olsun! 🎉`,
       color: 0x10B981,
-      fields: [
-        { name: "🛒 Ürün",   value: product,           inline: true },
-        { name: "💰 Tutar",  value: `₺${amount}`,      inline: true },
-        { name: "🔑 Lisans", value: `\`${licenseKey}\``, inline: false },
-      ]
-    }),
+      fields,
+    })
+  },
 
   topupRequest: (user: string, amount: number, ref: string, userImage?: string | null) =>
     sendDiscordNotification({
