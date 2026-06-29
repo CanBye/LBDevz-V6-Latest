@@ -36,18 +36,27 @@ interface HeroSectionProps {
 export function HeroSection({ className, heroReady = false }: HeroSectionProps) {
   const { t } = useLanguage()
   return (
-    <div className={cn("relative flex min-h-screen w-full flex-col bg-black", className)}>
+    <div className={cn("relative flex min-h-screen w-full flex-col", className)}
+      style={{ background: "#000" }}
+    >
+      {/* Top radial gradient */}
+      <div
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{ background: "radial-gradient(125% 125% at 50% -50%, #35013640 40%, transparent 100%)" }}
+        aria-hidden="true"
+      />
+
       <div className="pointer-events-none absolute inset-0 z-0" aria-hidden="true">
         <LaserFlow
-          color="#6c238b"
+          color="#350136"
           wispDensity={1.8}
           flowSpeed={0.5}
           verticalSizing={2}
           horizontalSizing={0.9}
-          fogIntensity={0.15}
-          fogScale={0.3}
+          fogIntensity={0.07}
+          fogScale={0.25}
           wispSpeed={16}
-          wispIntensity={15}
+          wispIntensity={7}
           flowStrength={0.5}
           decay={1.9}
           horizontalBeamOffset={0}
@@ -123,12 +132,28 @@ export function HeroSection({ className, heroReady = false }: HeroSectionProps) 
             <p className="text-[10px] font-medium uppercase tracking-[0.35em] text-white/30">
               {t("heroReferenceServers")}
             </p>
-            <img
-              src={assets.logo.clastie}
-              alt="Clastie"
-              draggable={false}
-              className="h-9 w-auto object-contain opacity-60 transition-opacity hover:opacity-90 sm:h-10"
-            />
+            <div className="flex flex-wrap justify-center gap-2">
+              {[
+                { name: "HanedanMC", players: 480 },
+                { name: "KralMC",    players: 312 },
+                { name: "VortexMC",  players: 275 },
+                { name: "EmpireMC",  players: 198 },
+              ].map(s => (
+                <div
+                  key={s.name}
+                  className="flex items-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.04] px-1 py-1 pr-2.5 backdrop-blur-sm"
+                >
+                  <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-white/[0.08] border border-white/[0.08]">
+                    <span className="text-[9px] font-bold text-white/50">{s.name.charAt(0)}</span>
+                  </div>
+                  <span className="text-xs font-medium text-white/60">{s.name}</span>
+                  <div className="ml-1 flex items-center gap-0.5 rounded-full bg-white/[0.06] px-1.5 py-0.5">
+                    <span className="text-[10px] text-white/35">{s.players}</span>
+                    <Icon icon="solar:users-group-two-rounded-bold" className="text-white/25" style={{ fontSize: 13 }} />
+                  </div>
+                </div>
+              ))}
+            </div>
           </motion.div>
         </div>
       </main>

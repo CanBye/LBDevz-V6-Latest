@@ -37,8 +37,8 @@ function ReferenceCard({ name, href, logo, players, index }: ReferenceCardProps)
       className={cn(
         "group flex items-center gap-2.5 rounded-full px-1 py-1 pr-2",
         "border border-white/[0.1]",
-        "bg-gradient-to-b from-white/[0.06] to-[#350136]/30",
-        "hover:border-white/20 hover:from-white/[0.09] hover:to-[#350136]/50",
+        "bg-white/[0.04]",
+        "hover:border-white/20 hover:bg-white/[0.07]",
         "transition-all duration-300 select-none",
       )}
     >
