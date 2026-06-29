@@ -51,6 +51,10 @@ export function ReviewsSection({ className }: { className?: string }) {
 
   return (
     <section id="yorumlar" className={cn("relative border-t border-white/[0.06] bg-black overflow-hidden", className)}>
+      {/* Sol üst — kırmızı kalp çarpraz */}
+      <img src="/assets/icons/red-heart_2764-fe0f.png" alt="" aria-hidden className="pointer-events-none absolute -top-4 -left-4 size-24 object-contain opacity-70 -rotate-[25deg] select-none" />
+      {/* Sağ alt — açık mavi kalp */}
+      <img src="/assets/icons/light-blue-heart_1fa75.png" alt="" aria-hidden className="pointer-events-none absolute -bottom-4 -right-4 size-24 object-contain opacity-70 rotate-[20deg] select-none" />
       <div className="mx-auto max-w-6xl px-6 py-24 sm:px-8 sm:py-32">
         <div className="grid items-center gap-14 lg:grid-cols-[1fr_1.4fr]">
           <motion.div
