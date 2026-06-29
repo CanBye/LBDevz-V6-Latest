@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ServicesShowcase } from "@/components/sections/why/services-showcase";
 import { DottedCorner } from "@/components/ui/dotted-corners";
+import { GradientDots } from "@/components/ui/gradient-dots";
 import { assets } from "@/lib/assets";
 import { useLanguage } from "@/lib/language-context";
 
@@ -94,6 +95,7 @@ export function WhySection({ className }: WhySectionProps) {
             className="relative lg:mt-8 h-full"
           >
             <div className="relative border border-white/[0.08] bg-[#070707] p-8 sm:p-10 rounded-2xl h-full flex flex-col justify-between overflow-hidden">
+              <GradientDots dotSize={6} spacing={9} duration={25} colorCycleDuration={5} backgroundColor="#070707" className="opacity-40 rounded-2xl" />
               <DottedCorner position="top-right" className="right-4 top-4 opacity-30" size={5} />
               
               <div className="space-y-6">
