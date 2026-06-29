@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { AnimatedTextCycle } from "@/components/ui/animated-text-cycle";
 import { LaserFlow } from "@/components/ui/laser-flow";
 import { Icon } from "@iconify/react";
+import { CosmicButton } from "@/components/ui/cosmic-button";
 import { MiniNavbar } from "@/components/layout/mini-navbar";
 import { assets } from "@/lib/assets";
 import { useLanguage } from "@/lib/language-context";
@@ -120,13 +121,9 @@ export function HeroSection({ className, heroReady = false }: HeroSectionProps) 
             transition={{ duration: 0.45, delay: 0.22, ease: "easeOut" }}
             className="relative z-20 mt-7 flex flex-col items-center gap-3 sm:flex-row sm:gap-4"
           >
-            <Link
-              href="#iletisim"
-              className="group inline-flex h-11 items-center gap-2 rounded-full bg-white px-7 text-sm font-semibold text-black transition-colors hover:bg-white/90"
-            >
+            <CosmicButton href="#iletisim">
               {t("heroCta1")}
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </Link>
+            </CosmicButton>
             <Link
               href="#neden-biz"
               className="inline-flex h-11 items-center rounded-full border border-white/15 px-7 text-sm font-medium text-white/75 transition-colors hover:border-white/30 hover:text-white"

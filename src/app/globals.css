@@ -308,3 +308,18 @@
   filter: blur(4px);
   box-shadow: 0 0 30px 12px rgba(40, 120, 240, 0.4), 0 0 80px 30px rgba(20, 80, 200, 0.2);
 }
+
+@keyframes cosmic-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes cosmic-spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}
+@utility animate-cosmic-spin {
+  animation: cosmic-spin 3s linear infinite;
+}
+@utility animate-cosmic-spin-slow {
+  animation: cosmic-spin-slow 5s linear infinite;
+}
