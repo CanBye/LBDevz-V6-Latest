@@ -2,6 +2,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { footerLinks, siteConfig } from "@/lib/site-content";
 import { TextHoverEffect } from "@/components/ui/text-hover-effect";
+import { StarsBackground } from "@/components/ui/stars-background";
 
 interface FooterProps {
   className?: string;
@@ -9,8 +10,11 @@ interface FooterProps {
 
 export function Footer({ className }: FooterProps) {
   return (
-    <footer
+    <StarsBackground
       id="iletisim"
+      factor={0.04}
+      speed={35}
+      starColor="#ffffff"
       className={cn("bg-black", className)}
     >
       {/* Text hover effect — bleeds into footer */}
@@ -152,6 +156,6 @@ export function Footer({ className }: FooterProps) {
           </div>
         </div>
       </div>
-    </footer>
+    </StarsBackground>
   );
 }
