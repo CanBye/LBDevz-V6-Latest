@@ -32,7 +32,7 @@ export function FreeServicesSection({ className }: FreeServicesSectionProps) {
         </motion.div>
 
         {/* Glow */}
-        <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full blur-[120px] bg-emerald-500/10" />
+        <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full blur-[100px] bg-emerald-500/20 z-0" />
 
         {/* Floating white card — full width of max-w-6xl */}
         <motion.div
