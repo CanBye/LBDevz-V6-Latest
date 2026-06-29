@@ -9,6 +9,7 @@ import { AnimatedTextCycle } from "@/components/ui/animated-text-cycle";
 import { LaserFlow } from "@/components/ui/laser-flow";
 import { Icon } from "@iconify/react";
 import { CosmicButton } from "@/components/ui/cosmic-button";
+import { AnimatedCursor } from "@/components/ui/cursor";
 import { MiniNavbar } from "@/components/layout/mini-navbar";
 import { assets } from "@/lib/assets";
 import { useLanguage } from "@/lib/language-context";
@@ -79,6 +80,31 @@ export function HeroSection({ className, heroReady = false }: HeroSectionProps) 
       </div>
 
       <MiniNavbar />
+
+      {/* Animated presence cursors */}
+      <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden" aria-hidden="true">
+        <AnimatedCursor
+          color="#7c3aed"
+          name="@Ahmet"
+          keyframes={[{ x: 120, y: 180 }, { x: 260, y: 140 }, { x: 200, y: 220 }]}
+          duration={5}
+          delay={0}
+        />
+        <AnimatedCursor
+          color="#0ea5e9"
+          name="@Zeynep"
+          keyframes={[{ x: 480, y: 260 }, { x: 380, y: 180 }, { x: 520, y: 300 }]}
+          duration={6}
+          delay={1.2}
+        />
+        <AnimatedCursor
+          color="#10b981"
+          name="@Mert"
+          keyframes={[{ x: 700, y: 150 }, { x: 620, y: 240 }, { x: 760, y: 190 }]}
+          duration={7}
+          delay={2.5}
+        />
+      </div>
 
       <main className="relative z-10 flex min-h-0 flex-1 items-center justify-center overflow-x-hidden px-4">
         <div className="flex w-full max-w-3xl flex-col items-center text-center">
