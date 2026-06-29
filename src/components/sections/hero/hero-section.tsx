@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatedTextCycle } from "@/components/ui/animated-text-cycle";
 import { LaserFlow } from "@/components/ui/laser-flow";
-;
+import { Icon } from "@iconify/react";
 import { MiniNavbar } from "@/components/layout/mini-navbar";
 import { assets } from "@/lib/assets";
 import { useLanguage } from "@/lib/language-context";
