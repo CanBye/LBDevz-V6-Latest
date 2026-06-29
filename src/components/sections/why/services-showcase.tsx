@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { aboutContent } from "@/lib/site-content";
+import { MagnifiedBento } from "@/components/ui/magnified-bento";
 
 // Creative technical SVG illustrations for each service to replace generic images or flat icons
 function ClientLauncherBlueprint() {
@@ -239,45 +240,8 @@ export function ServicesShowcase({ className }: ServicesShowcaseProps) {
           })}
         </div>
 
-        {/* Blueprint Viewer showing custom interactive SVGs */}
-        <div className="relative border border-white/[0.08] bg-[#070707] rounded-2xl overflow-hidden min-h-[300px] flex items-center justify-center">
-          {/* Futuristic blueprint matrix texture background */}
-          <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
-          
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeIndex}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.05 }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
-              className="absolute inset-0 flex items-center justify-center p-8 group"
-            >
-              {/* Custom SVG Blueprint */}
-              {(() => {
-                const BlueprintComponent = blueprints[activeIndex];
-                return <BlueprintComponent />;
-              })()}
-
-              {/* Status info overlays */}
-              <div className="absolute left-6 bottom-6 flex flex-col gap-1 font-mono text-[9px]">
-                <span className="text-white/20 uppercase tracking-widest">LBDEV LAB SCHEMATIC</span>
-                <span className="text-white/50 tracking-wider">PROJECT: {services[activeIndex].id.toUpperCase().replace(/-/g, "_")}</span>
-              </div>
-
-              <div className="absolute right-6 bottom-6 flex items-center gap-1.5 font-mono text-[9px] text-white/30">
-                <span className="size-1.5 rounded-full bg-emerald-500/80 animate-pulse" />
-                <span>SYSTEM_READY</span>
-              </div>
-
-              {/* Scope guidelines */}
-              <div className="absolute top-4 left-6 border-l border-white/10 h-3 w-px" />
-              <div className="absolute top-4 left-6 border-t border-white/10 w-3 h-px" />
-              <div className="absolute top-4 right-6 border-r border-white/10 h-3 w-px" />
-              <div className="absolute top-4 right-6 border-t border-white/10 w-3 h-px" />
-            </motion.div>
-          </AnimatePresence>
-        </div>
+        {/* MagnifiedBento */}
+        <MagnifiedBento className="self-stretch" />
 
       </div>
     </div>
