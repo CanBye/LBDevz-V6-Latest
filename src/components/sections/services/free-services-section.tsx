@@ -1,16 +1,45 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { ArrowUpRight, Check } from "lucide-react";
+import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { freeServices, siteConfig } from "@/lib/site-content";
+import { useEffect, useState } from "react";
 
 interface FreeServicesSectionProps {
   className?: string;
 }
 
 export function FreeServicesSection({ className }: FreeServicesSectionProps) {
+  const [current, setCurrent] = useState(0)
+  const [dir, setDir] = useState(1)
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setDir(1)
+      setCurrent(p => (p + 1) % freeServices.length)
+    }, 3000)
+    return () => clearInterval(t)
+  }, [])
+
+  function go(idx: number) {
+    setDir(idx > current ? 1 : -1)
+    setCurrent(idx)
+  }
+
+  function prev() {
+    setDir(-1)
+    setCurrent(p => (p - 1 + freeServices.length) % freeServices.length)
+  }
+
+  function next() {
+    setDir(1)
+    setCurrent(p => (p + 1) % freeServices.length)
+  }
+
+  const service = freeServices[current]
+
   return (
     <section
       id="ucretsiz"
@@ -34,14 +63,14 @@ export function FreeServicesSection({ className }: FreeServicesSectionProps) {
         {/* Glow */}
         <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full blur-[100px] bg-emerald-500/20 z-0" />
 
-        {/* Floating white card — full width of max-w-6xl */}
+        {/* Floating white card */}
         <motion.div
           initial={{ opacity: 0, y: 28 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
           className="relative bg-white rounded-3xl overflow-hidden"
-          style={{ boxShadow: "0 32px 80px rgba(0,0,0,0.45), 0 0 0 1px rgba(0,0,0,0.06), 0 0 60px rgba(52,211,153,0.08)" }}
+          style={{ boxShadow: "0 32px 80px rgba(0,0,0,0.45), 0 0 0 1px rgba(0,0,0,0.06)" }}
         >
           <div className="grid lg:grid-cols-[420px_1fr]">
 
@@ -93,47 +122,69 @@ export function FreeServicesSection({ className }: FreeServicesSectionProps) {
               </div>
             </div>
 
-            {/* Sağ */}
+            {/* Sağ — slider */}
             <div className="flex flex-col">
-              <div className="flex items-center gap-2 border-b border-black/[0.05] px-8 py-4">
+              {/* Slider header */}
+              <div className="flex items-center justify-between border-b border-black/[0.05] px-8 py-4">
                 <div className="flex gap-1.5">
                   {["bg-red-400", "bg-amber-400", "bg-emerald-400"].map(c => (
                     <span key={c} className={cn("size-2.5 rounded-full", c)} />
                   ))}
                 </div>
-                <span className="text-[10px] font-medium text-black/25 ml-1.5">Ücretsiz Hizmetler</span>
+                <div className="flex items-center gap-1">
+                  <button onClick={prev} className="flex size-6 items-center justify-center rounded-full hover:bg-black/[0.05] transition-colors text-black/30 hover:text-black/60">
+                    <ChevronLeft className="size-3.5" />
+                  </button>
+                  <button onClick={next} className="flex size-6 items-center justify-center rounded-full hover:bg-black/[0.05] transition-colors text-black/30 hover:text-black/60">
+                    <ChevronRight className="size-3.5" />
+                  </button>
+                </div>
               </div>
 
-              <ul className="flex-1 divide-y divide-black/[0.05]">
-                {freeServices.map((service, index) => (
-                  <motion.li
-                    key={service.title}
-                    initial={{ opacity: 0, x: 10 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.3, delay: index * 0.06 }}
-                    className="group flex items-center gap-4 px-8 py-5 transition-colors hover:bg-black/[0.02]"
+              {/* Slide area */}
+              <div className="flex-1 flex items-center justify-center overflow-hidden px-10 py-12">
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={current}
+                    initial={{ opacity: 0, x: dir * 40 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: dir * -40 }}
+                    transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                    className="flex flex-col items-center text-center gap-6 w-full max-w-xs mx-auto"
                   >
-                    <div className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-black/[0.07] bg-black/[0.03]">
-                      <img src={service.icon} alt="" aria-hidden className="size-4 object-contain opacity-45 group-hover:opacity-75 transition-opacity" />
+                    {/* Icon */}
+                    <div className="flex size-20 items-center justify-center rounded-2xl border border-black/[0.07] bg-black/[0.03]">
+                      <img src={service.icon} alt="" aria-hidden className="size-10 object-contain" />
                     </div>
 
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-black/85">{service.title}</p>
-                      <p className="text-xs text-black/50 mt-0.5 leading-relaxed">{service.description}</p>
+                    {/* Text */}
+                    <div className="space-y-2">
+                      <h3 className="text-xl font-semibold text-black/85">{service.title}</h3>
+                      <p className="text-sm text-black/50 leading-relaxed">{service.description}</p>
                     </div>
 
-                    <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-emerald-50 border border-emerald-200/60">
-                      <Check className="size-3 text-emerald-500" strokeWidth={2.5} />
-                    </div>
-                  </motion.li>
+                    {/* Free badge */}
+                    <span className="rounded-full border border-emerald-200 bg-emerald-50 px-4 py-1 text-xs font-bold text-emerald-600">
+                      Ücretsiz
+                    </span>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              {/* Dots */}
+              <div className="flex items-center justify-center gap-1.5 pb-8">
+                {freeServices.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => go(i)}
+                    className={cn(
+                      "rounded-full transition-all duration-300",
+                      i === current
+                        ? "w-5 h-1.5 bg-black/50"
+                        : "w-1.5 h-1.5 bg-black/15 hover:bg-black/30"
+                    )}
+                  />
                 ))}
-              </ul>
-
-              <div className="border-t border-black/[0.05] bg-black/[0.015] px-8 py-4">
-                <p className="text-[11px] text-black/45 leading-relaxed">
-                  Ücretli işler için önce şeffaf teklif veriyoruz — onaylamadan hiçbir şey başlamıyor.
-                </p>
               </div>
             </div>
 
