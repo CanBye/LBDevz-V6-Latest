@@ -59,7 +59,7 @@ export function WhySection({ className }: WhySectionProps) {
                   {t("whyBody1")}
                 </p>
                 <p className="text-base leading-relaxed text-white/45">
-                  {t("whyBody2")}
+                  Başlangıçta <strong className="text-white/70 font-semibold">Minecraft sunucularına</strong> odaklanarak yola çıktık, ardından <strong className="text-white/70 font-semibold">web geliştirme</strong> ve <strong className="text-white/70 font-semibold">genel yazılım sektörüne</strong> genişledik. Bugün <strong className="text-white/70 font-semibold">Minecraft'tan FiveM'e</strong>, <strong className="text-white/70 font-semibold">özel projelerden otomasyona</strong> kadar birçok alanda hizmet veriyoruz — <strong className="text-white/70 font-semibold">üçüncü parti sistemlere bağımlı olmadan</strong>, temiz ve modern kodlarla!
                 </p>
               </motion.div>
             </div>
