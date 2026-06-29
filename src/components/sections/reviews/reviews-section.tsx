@@ -51,10 +51,6 @@ export function ReviewsSection({ className }: { className?: string }) {
 
   return (
     <section id="yorumlar" className={cn("relative border-t border-white/[0.06] bg-black overflow-hidden", className)}>
-      {/* Sol üst — kırmızı kalp çarpraz */}
-      <img src="/assets/icons/red-heart_2764-fe0f.png" alt="" aria-hidden className="pointer-events-none absolute -top-4 -left-4 size-24 object-contain opacity-70 -rotate-[25deg] select-none" />
-      {/* Sağ alt — açık mavi kalp */}
-      <img src="/assets/icons/light-blue-heart_1fa75.png" alt="" aria-hidden className="pointer-events-none absolute -bottom-4 -right-4 size-24 object-contain opacity-70 rotate-[20deg] select-none" />
       <div className="mx-auto max-w-6xl px-6 py-24 sm:px-8 sm:py-32">
         <div className="grid items-center gap-14 lg:grid-cols-[1fr_1.4fr]">
           <motion.div
@@ -65,7 +61,10 @@ export function ReviewsSection({ className }: { className?: string }) {
             className="space-y-8"
           >
             <div className="space-y-4">
-              <p className="text-[11px] font-bold uppercase tracking-[0.4em] text-white/35">{t("reviewsEyebrow")}</p>
+              <div className="relative inline-block">
+                <img src="/assets/icons/red-heart_2764-fe0f.png" alt="" aria-hidden className="pointer-events-none absolute -top-5 -left-6 size-10 object-contain opacity-80 -rotate-[20deg] select-none" />
+                <p className="text-[11px] font-bold uppercase tracking-[0.4em] text-white/35">{t("reviewsEyebrow")}</p>
+              </div>
               <h2 className="text-3xl font-light tracking-tight text-white sm:text-4xl md:text-5xl leading-[1.1]">
                 {t("reviewsHeadline")}
               </h2>
@@ -84,6 +83,7 @@ export function ReviewsSection({ className }: { className?: string }) {
           </motion.div>
 
           <div className="relative flex flex-col gap-5 overflow-hidden">
+            <img src="/assets/icons/light-blue-heart_1fa75.png" alt="" aria-hidden className="pointer-events-none absolute bottom-2 right-2 size-10 object-contain opacity-75 rotate-[15deg] select-none z-20" />
             <div className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-black to-transparent z-10" />
             <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-black to-transparent z-10" />
             <Marquee pauseOnHover repeat={2}>
