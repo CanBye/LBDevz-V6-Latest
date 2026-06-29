@@ -252,7 +252,7 @@ export default function AdminTeamPage() {
               <input className={inputCls} type="number" placeholder="Tecrübe (yıl)" value={form.yearsExperience} onChange={f("yearsExperience")} />
             </div>
             <textarea className={cn(inputCls, "min-h-[60px] resize-none")} placeholder="Kısa biyografi (kartta görünür)..." value={form.bio} onChange={f("bio")} />
-            <textarea className={cn(inputCls, "min-h-[90px] resize-none")} placeholder="Uzun biyografi / hakkında (profil sayfasında, HTML destekli)..." value={form.longBio} onChange={f("longBio")} />
+            <textarea className={cn(inputCls, "min-h-[160px] resize-y")} placeholder="Uzun biyografi / hakkında (profil sayfasında, HTML destekli)..." value={form.longBio} onChange={f("longBio")} />
             <input className={inputCls} placeholder="Profil fotoğrafı URL" value={form.image} onChange={f("image")} />
             <input className={inputCls} placeholder="Bildiği diller / teknolojiler (virgülle: Java, React, Go)" value={form.languages} onChange={f("languages")} />
 

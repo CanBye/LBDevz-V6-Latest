@@ -60,3 +60,19 @@ export const productReviews = pgTable('product_reviews', {
 })
 
 export type ProductReview = typeof productReviews.$inferSelect
+
+/** Admin-managed reference servers shown in hero and/or references section. */
+export const referenceServers = pgTable('reference_servers', {
+  id:             uuid('id').primaryKey().defaultRandom(),
+  name:           text('name').notNull(),
+  href:           text('href'),
+  logoUrl:        text('logo_url'),
+  players:        integer('players').default(0).notNull(),
+  showInHero:     boolean('show_in_hero').default(true).notNull(),
+  showInSection:  boolean('show_in_section').default(true).notNull(),
+  order:          integer('order').default(0).notNull(),
+  visible:        boolean('visible').default(true).notNull(),
+  createdAt:      timestamp('created_at').defaultNow().notNull(),
+})
+
+export type ReferenceServer = typeof referenceServers.$inferSelect
