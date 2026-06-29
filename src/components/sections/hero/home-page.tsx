@@ -11,6 +11,7 @@ import { GlobalSection } from "@/components/sections/global/global-section";
 import { ReviewsSection } from "@/components/sections/reviews/reviews-section";
 import { TeamSection } from "@/components/sections/team/team-section";
 import { BlogSection } from "@/components/sections/blog/blog-section";
+import { ReferencesSection } from "@/components/sections/references/references-section";
 import { ScrollReveal } from "@/components/ui/scroll-reveal"
 ;
 
@@ -49,6 +50,10 @@ export function HomePage() {
 
       <ScrollReveal delay={0}>
         <TeamSection />
+      </ScrollReveal>
+
+      <ScrollReveal delay={0}>
+        <ReferencesSection />
       </ScrollReveal>
 
       <ScrollReveal delay={0}>
