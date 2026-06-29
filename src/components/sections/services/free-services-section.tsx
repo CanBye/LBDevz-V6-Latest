@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { freeServices, siteConfig } from "@/lib/site-content";
 
@@ -14,127 +14,111 @@ export function FreeServicesSection({ className }: FreeServicesSectionProps) {
   return (
     <section
       id="ucretsiz"
-      className={cn("relative bg-[#f5f5f7]", className)}
+      className={cn("relative bg-black border-t border-white/[0.06]", className)}
     >
-      <div className="mx-auto max-w-6xl px-6 py-24 sm:px-8 sm:py-32">
+      <div className="mx-auto max-w-5xl px-6 py-24 sm:px-8 sm:py-32">
 
-        {/* Başlık */}
+        {/* Floating white card */}
         <motion.div
-          initial={{ opacity: 0, y: 14 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-12 text-center space-y-3"
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="bg-white rounded-3xl shadow-2xl shadow-white/[0.04] overflow-hidden"
         >
-          <p className="text-[11px] font-bold uppercase tracking-[0.4em] text-black/30">
-            LBDEV // NO COST
-          </p>
-          <h2 className="text-3xl font-semibold tracking-tight text-black sm:text-4xl">
-            Neler ücretsiz?
-          </h2>
-          <p className="text-sm text-black/45 max-w-md mx-auto leading-relaxed">
-            Projeni anlat, sorunu paylaş — danışmanlık, kontrol ve fiyat
-            teklifi bizden. Satın alma baskısı yok.
-          </p>
-        </motion.div>
+          <div className="grid lg:grid-cols-[1fr_1.1fr]">
 
-        {/* Beyaz card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-          className="bg-white rounded-2xl shadow-xl shadow-black/[0.08] overflow-hidden border border-black/[0.06]"
-        >
-          {/* Card header */}
-          <div className="border-b border-black/[0.06] px-6 py-4 sm:px-8 flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/30">
-              Ücretsiz Hizmetler
-            </span>
-            <div className="flex items-center gap-1.5">
-              {["bg-red-400", "bg-amber-400", "bg-emerald-400"].map(c => (
-                <span key={c} className={cn("size-2.5 rounded-full", c)} />
-              ))}
-            </div>
-          </div>
-
-          {/* Servis listesi */}
-          <ul className="divide-y divide-black/[0.05]">
-            {freeServices.map((service, index) => (
-              <motion.li
-                key={service.title}
-                initial={{ opacity: 0, x: 10 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.35, delay: index * 0.05 }}
-                className="group flex gap-5 px-6 py-5 transition-colors hover:bg-black/[0.02] sm:gap-6 sm:px-8"
-              >
-                <span className="shrink-0 font-mono text-[11px] text-black/20 pt-0.5">
-                  0{index + 1}
+            {/* Sol — başlık + CTA */}
+            <div className="flex flex-col justify-between p-8 sm:p-10 border-b border-black/[0.06] lg:border-b-0 lg:border-r">
+              <div className="space-y-5">
+                <span className="inline-block rounded-full border border-black/[0.08] bg-black/[0.04] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.3em] text-black/40">
+                  No cost
                 </span>
 
-                <div className="flex min-w-0 flex-1 items-start gap-4">
-                  <div className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-black/[0.07] bg-black/[0.03]">
-                    <img
-                      src={service.icon}
-                      alt=""
-                      aria-hidden
-                      className="size-4 object-contain opacity-50 transition-opacity group-hover:opacity-80"
-                    />
-                  </div>
+                <h2 className="text-2xl font-semibold tracking-tight text-black sm:text-3xl leading-snug">
+                  Her ihtiyaca yönelik<br />
+                  <span className="text-black/40 font-light">ücretsiz destek.</span>
+                </h2>
 
-                  <div className="min-w-0 flex-1">
-                    <h3 className="text-sm font-semibold tracking-tight text-black/80 sm:text-base">
-                      {service.title}
-                    </h3>
-                    <p className="mt-1 text-xs leading-relaxed text-black/40 sm:text-sm">
-                      {service.description}
-                    </p>
-                  </div>
+                <p className="text-sm text-black/45 leading-relaxed max-w-xs">
+                  Projeni anlat, sorunu paylaş — danışmanlık, kontrol
+                  ve fiyat teklifi bizden. Satın alma baskısı yok.
+                </p>
+              </div>
 
-                  <span className="shrink-0 self-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-600">
-                    ₺0
-                  </span>
+              <div className="mt-8 space-y-4">
+                <div className="grid grid-cols-3 gap-3 border-t border-black/[0.06] pt-6">
+                  {[
+                    { label: "Danışmanlık", value: "₺0" },
+                    { label: "Kontrol", value: "₺0" },
+                    { label: "Teklif", value: "₺0" },
+                  ].map(item => (
+                    <div key={item.label} className="text-center">
+                      <p className="font-mono text-base font-bold text-black">{item.value}</p>
+                      <p className="text-[9px] uppercase tracking-widest text-black/30 mt-0.5">{item.label}</p>
+                    </div>
+                  ))}
                 </div>
-              </motion.li>
-            ))}
-          </ul>
 
-          {/* Card footer */}
-          <div className="border-t border-black/[0.05] bg-black/[0.02] px-6 py-5 sm:px-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-[11px] leading-relaxed text-black/35 max-w-sm">
-              Ücretli işler için önce şeffaf teklif veriyoruz — onaylamadan hiçbir şey başlamıyor.
-            </p>
-            <Link
-              href={siteConfig.discordInvite}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group inline-flex h-9 items-center gap-1.5 rounded-full bg-black px-5 text-xs font-semibold text-white transition-all hover:bg-black/80 shrink-0"
-            >
-              Discord&apos;a yaz
-              <ArrowUpRight className="size-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-            </Link>
-          </div>
-        </motion.div>
-
-        {/* Alt istatistikler */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.4, delay: 0.2 }}
-          className="mt-8 grid grid-cols-3 gap-4 sm:gap-8 text-center"
-        >
-          {[
-            { label: "Danışmanlık", value: "₺0" },
-            { label: "Plugin kontrolü", value: "₺0" },
-            { label: "Fiyat teklifi", value: "₺0" },
-          ].map(item => (
-            <div key={item.label}>
-              <p className="font-mono text-xl font-bold tracking-tight text-black/80">{item.value}</p>
-              <p className="mt-1 text-[10px] uppercase tracking-widest text-black/35">{item.label}</p>
+                <Link
+                  href={siteConfig.discordInvite}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group inline-flex items-center gap-2 text-sm font-semibold text-black/70 hover:text-black transition-colors"
+                >
+                  Kataloğa git
+                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </div>
             </div>
-          ))}
+
+            {/* Sağ — servis listesi */}
+            <div className="flex flex-col">
+              {/* Mini başlık */}
+              <div className="border-b border-black/[0.06] px-6 py-3.5 sm:px-8 flex items-center gap-2">
+                <div className="flex gap-1.5">
+                  {["bg-red-400", "bg-amber-400", "bg-emerald-400"].map(c => (
+                    <span key={c} className={cn("size-2 rounded-full", c)} />
+                  ))}
+                </div>
+                <span className="text-[10px] font-medium text-black/25 ml-1">Ücretsiz Hizmetler</span>
+              </div>
+
+              <ul className="flex-1 divide-y divide-black/[0.05]">
+                {freeServices.map((service, index) => (
+                  <motion.li
+                    key={service.title}
+                    initial={{ opacity: 0, x: 8 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                    className="group flex items-center gap-4 px-6 py-4 transition-colors hover:bg-black/[0.02] sm:px-8"
+                  >
+                    <div className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-black/[0.07] bg-black/[0.03]">
+                      <img src={service.icon} alt="" aria-hidden className="size-4 object-contain opacity-50 group-hover:opacity-80 transition-opacity" />
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-black/75">{service.title}</p>
+                      <p className="text-[11px] text-black/35 truncate">{service.description}</p>
+                    </div>
+
+                    <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-100">
+                      <Check className="size-3 text-emerald-600" strokeWidth={2.5} />
+                    </span>
+                  </motion.li>
+                ))}
+              </ul>
+
+              {/* Footer */}
+              <div className="border-t border-black/[0.05] bg-black/[0.02] px-6 py-4 sm:px-8">
+                <p className="text-[10px] text-black/30 leading-relaxed">
+                  Ücretli işler için önce şeffaf teklif veriyoruz — onaylamadan hiçbir şey başlamıyor.
+                </p>
+              </div>
+            </div>
+
+          </div>
         </motion.div>
 
       </div>
