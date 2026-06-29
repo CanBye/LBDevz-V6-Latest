@@ -123,68 +123,62 @@ export function FreeServicesSection({ className }: FreeServicesSectionProps) {
             </div>
 
             {/* Sağ — slider */}
-            <div className="flex flex-col">
-              {/* Slider header */}
-              <div className="flex items-center justify-between border-b border-black/[0.05] px-8 py-4">
-                <div className="flex gap-1.5">
-                  {["bg-red-400", "bg-amber-400", "bg-emerald-400"].map(c => (
-                    <span key={c} className={cn("size-2.5 rounded-full", c)} />
-                  ))}
-                </div>
-                <div className="flex items-center gap-1">
-                  <button onClick={prev} className="flex size-6 items-center justify-center rounded-full hover:bg-black/[0.05] transition-colors text-black/30 hover:text-black/60">
-                    <ChevronLeft className="size-3.5" />
-                  </button>
-                  <button onClick={next} className="flex size-6 items-center justify-center rounded-full hover:bg-black/[0.05] transition-colors text-black/30 hover:text-black/60">
-                    <ChevronRight className="size-3.5" />
-                  </button>
-                </div>
-              </div>
+            <div className="flex flex-col h-full">
 
               {/* Slide area */}
-              <div className="flex-1 flex items-center justify-center overflow-hidden px-10 py-12">
+              <div className="flex-1 flex items-center justify-center overflow-hidden px-10 py-14">
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.div
                     key={current}
-                    initial={{ opacity: 0, x: dir * 40 }}
+                    initial={{ opacity: 0, x: dir * 50 }}
                     animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: dir * -40 }}
+                    exit={{ opacity: 0, x: dir * -50 }}
                     transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                    className="flex flex-col items-center text-center gap-6 w-full max-w-xs mx-auto"
+                    className="flex flex-col items-center text-center gap-6 w-full max-w-[260px] mx-auto"
                   >
                     {/* Icon */}
-                    <div className="flex size-20 items-center justify-center rounded-2xl border border-black/[0.07] bg-black/[0.03]">
-                      <img src={service.icon} alt="" aria-hidden className="size-10 object-contain" />
+                    <div className="flex size-24 items-center justify-center rounded-3xl border border-black/[0.07] bg-black/[0.03] shadow-sm">
+                      <img src={service.icon} alt="" aria-hidden className="size-12 object-contain" />
                     </div>
 
                     {/* Text */}
-                    <div className="space-y-2">
+                    <div className="space-y-2.5">
                       <h3 className="text-xl font-semibold text-black/85">{service.title}</h3>
                       <p className="text-sm text-black/50 leading-relaxed">{service.description}</p>
                     </div>
 
                     {/* Free badge */}
-                    <span className="rounded-full border border-emerald-200 bg-emerald-50 px-4 py-1 text-xs font-bold text-emerald-600">
+                    <span className="rounded-full border border-emerald-200 bg-emerald-50 px-5 py-1 text-xs font-bold text-emerald-600 tracking-wide">
                       Ücretsiz
                     </span>
                   </motion.div>
                 </AnimatePresence>
               </div>
 
-              {/* Dots */}
-              <div className="flex items-center justify-center gap-1.5 pb-8">
-                {freeServices.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => go(i)}
-                    className={cn(
-                      "rounded-full transition-all duration-300",
-                      i === current
-                        ? "w-5 h-1.5 bg-black/50"
-                        : "w-1.5 h-1.5 bg-black/15 hover:bg-black/30"
-                    )}
-                  />
-                ))}
+              {/* Bottom nav */}
+              <div className="border-t border-black/[0.05] px-8 py-4 flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  {freeServices.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => go(i)}
+                      className={cn(
+                        "rounded-full transition-all duration-300",
+                        i === current
+                          ? "w-5 h-1.5 bg-black/50"
+                          : "w-1.5 h-1.5 bg-black/15 hover:bg-black/30"
+                      )}
+                    />
+                  ))}
+                </div>
+                <div className="flex items-center gap-1">
+                  <button onClick={prev} className="flex size-7 items-center justify-center rounded-full hover:bg-black/[0.05] transition-colors text-black/30 hover:text-black/60">
+                    <ChevronLeft className="size-4" />
+                  </button>
+                  <button onClick={next} className="flex size-7 items-center justify-center rounded-full hover:bg-black/[0.05] transition-colors text-black/30 hover:text-black/60">
+                    <ChevronRight className="size-4" />
+                  </button>
+                </div>
               </div>
             </div>
 
