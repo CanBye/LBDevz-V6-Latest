@@ -1,5 +1,9 @@
 "use client"
 
+import { ADMIN_PERMISSIONS } from "@/lib/admin-permissions"
+
+import { AdminGuard } from "@/components/admin/admin-guard"
+
 import { useEffect, useState } from "react"
 import { Icon } from "@iconify/react"
 import { cn } from "@/lib/utils"
@@ -48,68 +52,70 @@ export default function AdminNotificationsPage() {
   }
 
   return (
-    <div className="p-6 sm:p-8 max-w-2xl">
-      <div className="mb-8">
-        <h1 className="text-xl font-bold text-white/90">Bildirim Gönder</h1>
-        <p className="text-xs text-white/30 mt-0.5 uppercase tracking-widest font-mono">Admin · Notifications</p>
-      </div>
+    <AdminGuard permission={ADMIN_PERMISSIONS.NOTIFICATIONS}>
+      <div className="p-6 sm:p-8 max-w-2xl">
+        <div className="mb-8">
+          <h1 className="text-xl font-bold text-white/90">Bildirim Gönder</h1>
+          <p className="text-xs text-white/30 mt-0.5 uppercase tracking-widest font-mono">Admin · Notifications</p>
+        </div>
 
-      <div className="rounded-2xl border border-white/[0.07] bg-[#0a0a0a] p-6 space-y-4">
-        {/* Target */}
-        <div className="space-y-2">
-          <label className="text-[10px] font-bold text-white/30 uppercase tracking-wider">Hedef</label>
-          <div className="flex gap-2">
-            {[["all", "Tüm Kullanıcılar"], ["user", "Belirli Kullanıcı"]].map(([v, l]) => (
-              <button key={v} onClick={() => setForm(p => ({ ...p, target: v }))}
-                className={cn("flex-1 rounded-xl border py-2 text-xs font-semibold transition-all",
-                  form.target === v ? "border-white/20 bg-white/[0.07] text-white" : "border-white/[0.06] text-white/35 hover:text-white/60")}>
-                {l}
-              </button>
-            ))}
+        <div className="rounded-2xl border border-white/[0.07] bg-[#0a0a0a] p-6 space-y-4">
+          {/* Target */}
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold text-white/30 uppercase tracking-wider">Hedef</label>
+            <div className="flex gap-2">
+              {[["all", "Tüm Kullanıcılar"], ["user", "Belirli Kullanıcı"]].map(([v, l]) => (
+                <button key={v} onClick={() => setForm(p => ({ ...p, target: v }))}
+                  className={cn("flex-1 rounded-xl border py-2 text-xs font-semibold transition-all",
+                    form.target === v ? "border-white/20 bg-white/[0.07] text-white" : "border-white/[0.06] text-white/35 hover:text-white/60")}>
+                  {l}
+                </button>
+              ))}
+            </div>
+            {form.target === "user" && (
+              <select className={inputCls} value={form.userId} onChange={e => setForm(p => ({ ...p, userId: e.target.value }))}>
+                <option value="" className="bg-[#111]">Kullanıcı seç...</option>
+                {customers.map(c => <option key={c.id} value={c.id} className="bg-[#111]">{c.name ?? c.username ?? c.email}</option>)}
+              </select>
+            )}
           </div>
-          {form.target === "user" && (
-            <select className={inputCls} value={form.userId} onChange={e => setForm(p => ({ ...p, userId: e.target.value }))}>
-              <option value="" className="bg-[#111]">Kullanıcı seç...</option>
-              {customers.map(c => <option key={c.id} value={c.id} className="bg-[#111]">{c.name ?? c.username ?? c.email}</option>)}
-            </select>
-          )}
-        </div>
 
-        {/* Type */}
-        <div className="space-y-2">
-          <label className="text-[10px] font-bold text-white/30 uppercase tracking-wider">Tür</label>
-          <div className="flex gap-2 flex-wrap">
-            {TYPES.map(t => (
-              <button key={t} onClick={() => setForm(p => ({ ...p, type: t }))}
-                className={cn("rounded-lg border px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider transition-all",
-                  form.type === t ? typeColors[t] : "border-white/[0.06] text-white/25 hover:text-white/50")}>
-                {t}
-              </button>
-            ))}
+          {/* Type */}
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold text-white/30 uppercase tracking-wider">Tür</label>
+            <div className="flex gap-2 flex-wrap">
+              {TYPES.map(t => (
+                <button key={t} onClick={() => setForm(p => ({ ...p, type: t }))}
+                  className={cn("rounded-lg border px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider transition-all",
+                    form.type === t ? typeColors[t] : "border-white/[0.06] text-white/25 hover:text-white/50")}>
+                  {t}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Content */}
-        <div className="space-y-2">
-          <label className="text-[10px] font-bold text-white/30 uppercase tracking-wider">Başlık</label>
-          <input className={inputCls} placeholder="Bildirim başlığı" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} />
-        </div>
-        <div className="space-y-2">
-          <label className="text-[10px] font-bold text-white/30 uppercase tracking-wider">Mesaj</label>
-          <textarea className={cn(inputCls, "min-h-[90px] resize-none")} placeholder="Bildirim içeriği..." value={form.body} onChange={e => setForm(p => ({ ...p, body: e.target.value }))} />
-        </div>
-        <div className="space-y-2">
-          <label className="text-[10px] font-bold text-white/30 uppercase tracking-wider">Link (isteğe bağlı)</label>
-          <input className={inputCls} placeholder="/dashboard/..." value={form.link} onChange={e => setForm(p => ({ ...p, link: e.target.value }))} />
-        </div>
+          {/* Content */}
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold text-white/30 uppercase tracking-wider">Başlık</label>
+            <input className={inputCls} placeholder="Bildirim başlığı" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} />
+          </div>
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold text-white/30 uppercase tracking-wider">Mesaj</label>
+            <textarea className={cn(inputCls, "min-h-[90px] resize-none")} placeholder="Bildirim içeriği..." value={form.body} onChange={e => setForm(p => ({ ...p, body: e.target.value }))} />
+          </div>
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold text-white/30 uppercase tracking-wider">Link (isteğe bağlı)</label>
+            <input className={inputCls} placeholder="/dashboard/..." value={form.link} onChange={e => setForm(p => ({ ...p, link: e.target.value }))} />
+          </div>
 
-        {msg && <div className={cn("rounded-xl border px-4 py-2.5 text-xs font-medium", msg.ok ? "border-emerald-500/20 bg-emerald-500/[0.06] text-emerald-400" : "border-red-500/20 bg-red-500/[0.06] text-red-400")}>{msg.text}</div>}
+          {msg && <div className={cn("rounded-xl border px-4 py-2.5 text-xs font-medium", msg.ok ? "border-emerald-500/20 bg-emerald-500/[0.06] text-emerald-400" : "border-red-500/20 bg-red-500/[0.06] text-red-400")}>{msg.text}</div>}
 
-        <button onClick={send} disabled={sending || !form.title || !form.body || (form.target === "user" && !form.userId)}
-          className="w-full flex items-center justify-center gap-2 rounded-xl bg-white text-black py-3 text-sm font-bold hover:bg-white/90 disabled:opacity-40 transition-all">
-          {sending ? <><Icon icon="carbon:circle-dash" className="animate-spin" width={15} /> Gönderiliyor...</> : <><Icon icon="carbon:send-alt" width={15} /> Gönder</>}
-        </button>
+          <button onClick={send} disabled={sending || !form.title || !form.body || (form.target === "user" && !form.userId)}
+            className="w-full flex items-center justify-center gap-2 rounded-xl bg-white text-black py-3 text-sm font-bold hover:bg-white/90 disabled:opacity-40 transition-all">
+            {sending ? <><Icon icon="carbon:circle-dash" className="animate-spin" width={15} /> Gönderiliyor...</> : <><Icon icon="carbon:send-alt" width={15} /> Gönder</>}
+          </button>
+        </div>
       </div>
-    </div>
+      </AdminGuard>
   )
 }

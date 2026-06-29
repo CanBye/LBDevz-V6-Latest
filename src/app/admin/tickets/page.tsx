@@ -1,5 +1,9 @@
 "use client"
 
+import { ADMIN_PERMISSIONS } from "@/lib/admin-permissions"
+
+import { AdminGuard } from "@/components/admin/admin-guard"
+
 import { useEffect, useState } from "react"
 import { Icon } from "@iconify/react"
 
@@ -148,102 +152,104 @@ export default function AdminTicketsPage() {
 
   if (selected) {
     return (
-      <div className="p-6 sm:p-8 space-y-6 max-w-4xl">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => { setSelected(null); setMessages([]) }}
-            className="flex items-center gap-2 text-sm text-white/40 hover:text-white/70 transition-colors"
-          >
-            <Icon icon="carbon:arrow-left" width={16} />
-            Ticket Listesi
-          </button>
-        </div>
-
-        <div className="rounded-2xl border border-white/[0.06] bg-[#070707] overflow-hidden">
-          <div className="border-b border-white/[0.04] px-6 py-4 flex items-start justify-between gap-4 flex-wrap">
-            <div>
-              <h2 className="font-bold text-white/90">{selected.ticket.subject}</h2>
-              <p className="text-xs text-white/35 mt-1">
-                {selected.user?.name ?? selected.user?.email ?? "Bilinmeyen"}
-                {" · "}
-                {categoryLabel[selected.ticket.category] ?? selected.ticket.category}
-                {" · "}
-                <span className={priorityColors[selected.ticket.priority]}>
-                  {selected.ticket.priority.toUpperCase()}
-                </span>
-              </p>
-            </div>
-            <div className="flex items-center gap-3 flex-wrap">
-              <select
-                value={selected.ticket.status}
-                onChange={(e) => handleStatusChange(e.target.value)}
-                disabled={updatingStatus}
-                className="rounded-xl border border-white/[0.08] bg-[#0c0c0c] px-3 py-1.5 text-xs text-white outline-none"
-              >
-                <option value="open" className="bg-[#0c0c0c]">Açık</option>
-                <option value="pending" className="bg-[#0c0c0c]">Bekliyor</option>
-                <option value="answered" className="bg-[#0c0c0c]">Yanıtlandı</option>
-                <option value="closed" className="bg-[#0c0c0c]">Kapatıldı</option>
-              </select>
-              <span className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${statusColors[selected.ticket.status]}`}>
-                {statusLabel[selected.ticket.status]}
-              </span>
-            </div>
+      <AdminGuard permission={ADMIN_PERMISSIONS.TICKETS}>
+        <div className="p-6 sm:p-8 space-y-6 max-w-4xl">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => { setSelected(null); setMessages([]) }}
+              className="flex items-center gap-2 text-sm text-white/40 hover:text-white/70 transition-colors"
+            >
+              <Icon icon="carbon:arrow-left" width={16} />
+              Ticket Listesi
+            </button>
           </div>
 
-          <div className="p-6 space-y-4 min-h-[200px]">
-            {messagesLoading ? (
-              <div className="text-center text-sm text-white/30 animate-pulse py-8">Yükleniyor...</div>
-            ) : messages.length === 0 ? (
-              <div className="text-center text-sm text-white/25 py-8">Mesaj bulunamadı</div>
-            ) : (
-              messages.map((m) => (
-                <div
-                  key={m.message.id}
-                  className={`rounded-xl border p-4 ${m.message.isInternal ? "border-amber-500/10 bg-amber-500/[0.03]" : "border-white/[0.06] bg-[#0a0a0a]"}`}
+          <div className="rounded-2xl border border-white/[0.06] bg-[#070707] overflow-hidden">
+            <div className="border-b border-white/[0.04] px-6 py-4 flex items-start justify-between gap-4 flex-wrap">
+              <div>
+                <h2 className="font-bold text-white/90">{selected.ticket.subject}</h2>
+                <p className="text-xs text-white/35 mt-1">
+                  {selected.user?.name ?? selected.user?.email ?? "Bilinmeyen"}
+                  {" · "}
+                  {categoryLabel[selected.ticket.category] ?? selected.ticket.category}
+                  {" · "}
+                  <span className={priorityColors[selected.ticket.priority]}>
+                    {selected.ticket.priority.toUpperCase()}
+                  </span>
+                </p>
+              </div>
+              <div className="flex items-center gap-3 flex-wrap">
+                <select
+                  value={selected.ticket.status}
+                  onChange={(e) => handleStatusChange(e.target.value)}
+                  disabled={updatingStatus}
+                  className="rounded-xl border border-white/[0.08] bg-[#0c0c0c] px-3 py-1.5 text-xs text-white outline-none"
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-semibold text-white/50">
-                      {m.author?.name ?? m.author?.email ?? "Bilinmeyen"}
-                    </span>
-                    {m.message.isInternal && (
-                      <span className="text-[10px] text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full">Internal</span>
-                    )}
+                  <option value="open" className="bg-[#0c0c0c]">Açık</option>
+                  <option value="pending" className="bg-[#0c0c0c]">Bekliyor</option>
+                  <option value="answered" className="bg-[#0c0c0c]">Yanıtlandı</option>
+                  <option value="closed" className="bg-[#0c0c0c]">Kapatıldı</option>
+                </select>
+                <span className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${statusColors[selected.ticket.status]}`}>
+                  {statusLabel[selected.ticket.status]}
+                </span>
+              </div>
+            </div>
+
+            <div className="p-6 space-y-4 min-h-[200px]">
+              {messagesLoading ? (
+                <div className="text-center text-sm text-white/30 animate-pulse py-8">Yükleniyor...</div>
+              ) : messages.length === 0 ? (
+                <div className="text-center text-sm text-white/25 py-8">Mesaj bulunamadı</div>
+              ) : (
+                messages.map((m) => (
+                  <div
+                    key={m.message.id}
+                    className={`rounded-xl border p-4 ${m.message.isInternal ? "border-amber-500/10 bg-amber-500/[0.03]" : "border-white/[0.06] bg-[#0a0a0a]"}`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-semibold text-white/50">
+                        {m.author?.name ?? m.author?.email ?? "Bilinmeyen"}
+                      </span>
+                      {m.message.isInternal && (
+                        <span className="text-[10px] text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full">Internal</span>
+                      )}
+                    </div>
+                    <p className="text-sm text-white/80 leading-relaxed">{m.message.body}</p>
+                    <p className="mt-2 text-[10px] text-white/20">
+                      {new Date(m.message.createdAt).toLocaleString("tr-TR")}
+                    </p>
                   </div>
-                  <p className="text-sm text-white/80 leading-relaxed">{m.message.body}</p>
-                  <p className="mt-2 text-[10px] text-white/20">
-                    {new Date(m.message.createdAt).toLocaleString("tr-TR")}
-                  </p>
-                </div>
-              ))
+                ))
+              )}
+            </div>
+
+            {selected.ticket.status !== "closed" && (
+              <div className="border-t border-white/[0.04] p-6">
+                <form onSubmit={handleReply} className="space-y-3">
+                  <textarea
+                    className={inputCls}
+                    rows={4}
+                    placeholder="Kullanıcıya yanıt yaz..."
+                    value={replyText}
+                    onChange={(e) => setReplyText(e.target.value)}
+                    required
+                  />
+                  <div className="flex gap-3">
+                    <button
+                      type="submit"
+                      disabled={replying}
+                      className="rounded-xl bg-white px-5 py-2.5 text-xs font-bold text-black hover:bg-white/90 disabled:opacity-50 transition-all"
+                    >
+                      {replying ? "Gönderiliyor..." : "Yanıt Gönder"}
+                    </button>
+                  </div>
+                </form>
+              </div>
             )}
           </div>
-
-          {selected.ticket.status !== "closed" && (
-            <div className="border-t border-white/[0.04] p-6">
-              <form onSubmit={handleReply} className="space-y-3">
-                <textarea
-                  className={inputCls}
-                  rows={4}
-                  placeholder="Kullanıcıya yanıt yaz..."
-                  value={replyText}
-                  onChange={(e) => setReplyText(e.target.value)}
-                  required
-                />
-                <div className="flex gap-3">
-                  <button
-                    type="submit"
-                    disabled={replying}
-                    className="rounded-xl bg-white px-5 py-2.5 text-xs font-bold text-black hover:bg-white/90 disabled:opacity-50 transition-all"
-                  >
-                    {replying ? "Gönderiliyor..." : "Yanıt Gönder"}
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
         </div>
-      </div>
+          </AdminGuard>
     )
   }
 

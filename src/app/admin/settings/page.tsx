@@ -1,5 +1,9 @@
 "use client"
 
+import { ADMIN_PERMISSIONS } from "@/lib/admin-permissions"
+
+import { AdminGuard } from "@/components/admin/admin-guard"
+
 import { useEffect, useState } from "react"
 import { Icon } from "@iconify/react"
 import { cn } from "@/lib/utils"
@@ -74,60 +78,62 @@ export default function AdminSettingsPage() {
   }
 
   return (
-    <div className="p-6 sm:p-8 max-w-3xl">
-      <div className="mb-8">
-        <h1 className="text-xl font-bold text-white/90">Panel Ayarları</h1>
-        <p className="text-xs text-white/30 mt-0.5 uppercase tracking-widest font-mono">Admin · Settings</p>
-      </div>
-
-      {msg && (
-        <div className={cn("mb-6 rounded-xl border px-4 py-2.5 text-xs font-medium", msg.ok ? "border-emerald-500/20 bg-emerald-500/[0.06] text-emerald-400" : "border-red-500/20 bg-red-500/[0.06] text-red-400")}>
-          {msg.text}
+    <AdminGuard permission={ADMIN_PERMISSIONS.SETTINGS}>
+      <div className="p-6 sm:p-8 max-w-3xl">
+        <div className="mb-8">
+          <h1 className="text-xl font-bold text-white/90">Panel Ayarları</h1>
+          <p className="text-xs text-white/30 mt-0.5 uppercase tracking-widest font-mono">Admin · Settings</p>
         </div>
-      )}
 
-      {loading ? (
-        <div className="space-y-4">{[1,2,3].map(i => <div key={i} className="h-20 rounded-2xl bg-white/[0.03] animate-pulse" />)}</div>
-      ) : (
-        <div className="space-y-8">
-          {SETTINGS_SCHEMA.map(({ section, icon, fields }) => (
-            <div key={section} className="rounded-2xl border border-white/[0.07] bg-[#090909] overflow-hidden">
-              <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.05]">
-                <Icon icon={icon} className="text-white/40" width={16} />
-                <p className="text-sm font-semibold text-white/70">{section}</p>
-              </div>
-              <div className="p-5 space-y-4">
-                {fields.map(field => (
-                  <div key={field.key}>
-                    <label className="block text-xs font-medium text-white/50 mb-1.5">
-                      {field.label}
-                      {field.hint && <span className="ml-2 text-white/25 font-normal">{field.hint}</span>}
-                    </label>
-                    <input
-                      type={field.type ?? "text"}
-                      className={inputCls}
-                      placeholder={field.placeholder}
-                      value={settings[field.key] ?? ""}
-                      onChange={e => change(field.key, e.target.value)}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-
-          <div className="flex justify-end">
-            <button
-              onClick={save}
-              disabled={saving}
-              className="flex items-center gap-2 rounded-xl bg-white text-black px-5 py-2.5 text-sm font-bold hover:bg-white/90 disabled:opacity-40 transition-all"
-            >
-              <Icon icon="carbon:save" width={15} />
-              {saving ? "Kaydediliyor..." : "Tüm Ayarları Kaydet"}
-            </button>
+        {msg && (
+          <div className={cn("mb-6 rounded-xl border px-4 py-2.5 text-xs font-medium", msg.ok ? "border-emerald-500/20 bg-emerald-500/[0.06] text-emerald-400" : "border-red-500/20 bg-red-500/[0.06] text-red-400")}>
+            {msg.text}
           </div>
-        </div>
-      )}
-    </div>
+        )}
+
+        {loading ? (
+          <div className="space-y-4">{[1,2,3].map(i => <div key={i} className="h-20 rounded-2xl bg-white/[0.03] animate-pulse" />)}</div>
+        ) : (
+          <div className="space-y-8">
+            {SETTINGS_SCHEMA.map(({ section, icon, fields }) => (
+              <div key={section} className="rounded-2xl border border-white/[0.07] bg-[#090909] overflow-hidden">
+                <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.05]">
+                  <Icon icon={icon} className="text-white/40" width={16} />
+                  <p className="text-sm font-semibold text-white/70">{section}</p>
+                </div>
+                <div className="p-5 space-y-4">
+                  {fields.map(field => (
+                    <div key={field.key}>
+                      <label className="block text-xs font-medium text-white/50 mb-1.5">
+                        {field.label}
+                        {field.hint && <span className="ml-2 text-white/25 font-normal">{field.hint}</span>}
+                      </label>
+                      <input
+                        type={field.type ?? "text"}
+                        className={inputCls}
+                        placeholder={field.placeholder}
+                        value={settings[field.key] ?? ""}
+                        onChange={e => change(field.key, e.target.value)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            <div className="flex justify-end">
+              <button
+                onClick={save}
+                disabled={saving}
+                className="flex items-center gap-2 rounded-xl bg-white text-black px-5 py-2.5 text-sm font-bold hover:bg-white/90 disabled:opacity-40 transition-all"
+              >
+                <Icon icon="carbon:save" width={15} />
+                {saving ? "Kaydediliyor..." : "Tüm Ayarları Kaydet"}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+      </AdminGuard>
   )
 }

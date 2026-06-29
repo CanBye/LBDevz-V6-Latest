@@ -1,5 +1,9 @@
 "use client"
 
+import { ADMIN_PERMISSIONS } from "@/lib/admin-permissions"
+
+import { AdminGuard } from "@/components/admin/admin-guard"
+
 import { useEffect, useState } from "react"
 import { Icon } from "@iconify/react"
 import {
@@ -29,14 +33,16 @@ const StatCard = ({ icon, label, value, sub }: { icon: string; label: string; va
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null
   return (
-    <div className="rounded-xl border border-white/[0.1] bg-[#0d0d0d] px-3 py-2.5 shadow-2xl">
-      <p className="text-[10px] text-white/40 mb-1.5">{label}</p>
-      {payload.map((p: any) => (
-        <p key={p.name} className="text-xs font-semibold" style={{ color: p.color }}>
-          {p.name === "revenue" ? `${Number(p.value).toLocaleString("tr-TR")} ₺` : `${p.value} sipariş`}
-        </p>
-      ))}
-    </div>
+    <AdminGuard permission={ADMIN_PERMISSIONS.REVENUE}>
+      <div className="rounded-xl border border-white/[0.1] bg-[#0d0d0d] px-3 py-2.5 shadow-2xl">
+        <p className="text-[10px] text-white/40 mb-1.5">{label}</p>
+        {payload.map((p: any) => (
+          <p key={p.name} className="text-xs font-semibold" style={{ color: p.color }}>
+            {p.name === "revenue" ? `${Number(p.value).toLocaleString("tr-TR")} ₺` : `${p.value} sipariş`}
+          </p>
+        ))}
+      </div>
+      </AdminGuard>
   )
 }
 
