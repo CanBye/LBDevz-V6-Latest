@@ -31,14 +31,17 @@ export function FreeServicesSection({ className }: FreeServicesSectionProps) {
           </p>
         </motion.div>
 
+        {/* Glow */}
+        <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full blur-[120px] bg-emerald-500/10" />
+
         {/* Floating white card — full width of max-w-6xl */}
         <motion.div
           initial={{ opacity: 0, y: 28 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-          className="bg-white rounded-3xl overflow-hidden"
-          style={{ boxShadow: "0 32px 80px rgba(0,0,0,0.35), 0 0 0 1px rgba(0,0,0,0.06)" }}
+          className="relative bg-white rounded-3xl overflow-hidden"
+          style={{ boxShadow: "0 32px 80px rgba(0,0,0,0.45), 0 0 0 1px rgba(0,0,0,0.06), 0 0 60px rgba(52,211,153,0.08)" }}
         >
           <div className="grid lg:grid-cols-[420px_1fr]">
 
@@ -58,7 +61,7 @@ export function FreeServicesSection({ className }: FreeServicesSectionProps) {
                   </h2>
                 </div>
 
-                <p className="text-sm text-black/45 leading-relaxed max-w-[280px]">
+                <p className="text-sm text-black/60 leading-relaxed max-w-[280px]">
                   Tam website projelerinden oyun scriptlerine, Discord botlarından
                   UI temalarına kadar kataloğumuzu hep yanında taşıyoruz.
                 </p>
@@ -116,8 +119,8 @@ export function FreeServicesSection({ className }: FreeServicesSectionProps) {
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-black/75">{service.title}</p>
-                      <p className="text-xs text-black/35 mt-0.5 leading-relaxed">{service.description}</p>
+                      <p className="text-sm font-semibold text-black/85">{service.title}</p>
+                      <p className="text-xs text-black/50 mt-0.5 leading-relaxed">{service.description}</p>
                     </div>
 
                     <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-emerald-50 border border-emerald-200/60">
@@ -128,7 +131,7 @@ export function FreeServicesSection({ className }: FreeServicesSectionProps) {
               </ul>
 
               <div className="border-t border-black/[0.05] bg-black/[0.015] px-8 py-4">
-                <p className="text-[11px] text-black/30 leading-relaxed">
+                <p className="text-[11px] text-black/45 leading-relaxed">
                   Ücretli işler için önce şeffaf teklif veriyoruz — onaylamadan hiçbir şey başlamıyor.
                 </p>
               </div>
