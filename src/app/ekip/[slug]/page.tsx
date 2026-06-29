@@ -35,6 +35,7 @@ export default function TeamMemberProfilePage() {
   const router = useRouter()
   const [member, setMember] = useState<TeamMember | null>(null)
   const [loading, setLoading] = useState(true)
+  const [memberProducts, setMemberProducts] = useState<Array<{id:string;name:string;imageUrl:string|null;type:string;priceCredits:number}>>([])
 
   useEffect(() => {
     fetch(`/api/site/team/${slug}`)
@@ -48,6 +49,11 @@ export default function TeamMemberProfilePage() {
         setLoading(false)
       })
       .catch(() => setLoading(false))
+
+    fetch(`/api/site/team/${slug}/products`)
+      .then(r => r.json())
+      .then(d => { if (Array.isArray(d)) setMemberProducts(d) })
+      .catch(() => {})
   }, [slug, router])
 
   if (loading) {
@@ -203,41 +209,34 @@ export default function TeamMemberProfilePage() {
           </Section>
         )}
 
-        {/* Projects */}
-        {projects.length > 0 && (
-          <Section title="Yaptığı Projeler" icon="carbon:portfolio" delay={0.2}>
+        {/* Member Products */}
+        {memberProducts.length > 0 && (
+          <Section title="Yaptığı Ürünler" icon="carbon:cube" delay={0.2}>
             <div className="grid gap-4 sm:grid-cols-2">
-              {projects.map((p, i) => {
-                const card = (
+              {memberProducts.map((p) => (
+                <Link key={p.id} href={`/magaza/${p.id}`} className="block group">
                   <div className="group h-full overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0a0a0a] transition-all hover:border-white/[0.13]">
-                    {p.image && (
+                    {p.imageUrl ? (
                       <div className="aspect-video w-full overflow-hidden bg-[#111]">
-                        <img
-                          src={p.image}
-                          alt={p.title}
-                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
+                        <img src={p.imageUrl} alt={p.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                      </div>
+                    ) : (
+                      <div className="aspect-video w-full bg-[#111] flex items-center justify-center">
+                        <Icon icon="carbon:cube" className="text-white/10" width={32} />
                       </div>
                     )}
                     <div className="p-4">
                       <div className="flex items-center justify-between gap-2">
-                        <p className="text-sm font-semibold text-white/85">{p.title}</p>
-                        {p.link && <Icon icon="carbon:arrow-up-right" width={14} className="shrink-0 text-white/30" />}
+                        <p className="text-sm font-semibold text-white/85">{p.name}</p>
+                        <Icon icon="carbon:arrow-up-right" width={14} className="shrink-0 text-white/30" />
                       </div>
-                      {p.description && (
-                        <p className="mt-1.5 text-xs leading-relaxed text-white/40 line-clamp-3">{p.description}</p>
-                      )}
+                      <p className="mt-1 text-[10px] text-white/30 uppercase tracking-wider">
+                        {p.type.replace("_", " ")} · {p.priceCredits === 0 ? "Ücretsiz" : `₺${p.priceCredits}`}
+                      </p>
                     </div>
                   </div>
-                )
-                return p.link ? (
-                  <a key={i} href={p.link} target="_blank" rel="noopener noreferrer" className="block">
-                    {card}
-                  </a>
-                ) : (
-                  <div key={i}>{card}</div>
-                )
-              })}
+                </Link>
+              ))}
             </div>
           </Section>
         )}
