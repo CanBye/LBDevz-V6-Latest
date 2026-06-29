@@ -3,6 +3,7 @@
 import { ADMIN_PERMISSIONS } from "@/lib/admin-permissions"
 
 import { AdminGuard } from "@/components/admin/admin-guard"
+import { useConfirm } from "@/components/ui/confirm-dialog"
 
 import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
@@ -124,7 +125,8 @@ export default function AdminProductsPage() {
   }
   async function deleteSelected() {
     if (selectedIds.size === 0) return
-    if (!window.confirm(`${selectedIds.size} ürün silinecek. Emin misiniz?`)) return
+    const ok = await confirm({ title: "Ürünleri Sil", description: `${selectedIds.size} ürün kalıcı olarak silinecek. Emin misiniz?`, confirmText: "Evet, Sil", cancelText: "İptal" })
+    if (!ok) return
     await Promise.all(
       [...selectedIds].map(id =>
         fetch(`/api/admin/products/${id}`, { method: "DELETE" }).catch(() => {})

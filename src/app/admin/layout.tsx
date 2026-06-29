@@ -3,12 +3,14 @@ import { redirect } from "next/navigation"
 import { AdminSidebar } from "@/components/admin/sidebar"
 import { AdminHeader } from "@/components/admin/header"
 import { AdminPermissionProvider } from "@/components/admin/admin-permission-context"
+import { ConfirmDialogProvider } from "@/components/ui/confirm-dialog"
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const access = await requireAdminAccess()
   if (!access) redirect("/dashboard")
 
   return (
+    <ConfirmDialogProvider>
     <AdminPermissionProvider
       isSuperAdmin={access.isSuperAdmin}
       permissions={access.permissions}
@@ -26,5 +28,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
       </div>
     </AdminPermissionProvider>
+    </ConfirmDialogProvider>
   )
 }

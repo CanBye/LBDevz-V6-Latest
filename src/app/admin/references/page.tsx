@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { Icon } from "@iconify/react"
 import { cn } from "@/lib/utils"
 import { AdminGuard } from "@/components/admin/admin-guard"
+import { useConfirm } from "@/components/ui/confirm-dialog"
 import { ADMIN_PERMISSIONS } from "@/lib/admin-permissions"
 
 interface RefServer {
@@ -31,6 +32,7 @@ export default function ReferencesAdminPage() {
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null)
   const [logoMode, setLogoMode] = useState<"url" | "upload">("url")
+  const confirm = useConfirm()
   const [uploadLoading, setUploadLoading] = useState(false)
 
   async function load() {
@@ -74,7 +76,8 @@ export default function ReferencesAdminPage() {
   }
 
   async function del(id: string) {
-    if (!confirm("Silinsin mi?")) return
+    const ok = await confirm({ title: "Sunucu Sil", description: "Bu sunucu kalıcı olarak silinecek.", confirmText: "Sil", cancelText: "İptal" })
+    if (!ok) return
     await fetch(`/api/admin/references/${id}`, { method: "DELETE" })
     load()
   }
