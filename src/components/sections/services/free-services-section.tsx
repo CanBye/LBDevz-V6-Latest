@@ -72,10 +72,10 @@ export function FreeServicesSection({ className }: FreeServicesSectionProps) {
           className="relative bg-white rounded-3xl overflow-hidden"
           style={{ boxShadow: "0 32px 80px rgba(0,0,0,0.45), 0 0 0 1px rgba(0,0,0,0.06)" }}
         >
-          <div className="grid lg:grid-cols-[420px_1fr]">
+          <div className="grid lg:grid-cols-2">
 
             {/* Sol */}
-            <div className="flex flex-col justify-between p-10 border-b border-black/[0.05] lg:border-b-0 lg:border-r">
+            <div className="flex flex-col justify-between p-12 border-b border-black/[0.05] lg:border-b-0 lg:border-r min-h-[420px]">
               <div className="space-y-6">
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-black/[0.07] bg-black/[0.03] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-black/35">
                   No Cost
@@ -126,7 +126,7 @@ export function FreeServicesSection({ className }: FreeServicesSectionProps) {
             <div className="flex flex-col h-full">
 
               {/* Slide area */}
-              <div className="flex-1 flex items-center justify-center overflow-hidden px-10 py-14">
+              <div className="flex-1 flex items-center justify-center overflow-hidden px-12 py-12">
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.div
                     key={current}
