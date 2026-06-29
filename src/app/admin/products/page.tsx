@@ -109,6 +109,30 @@ export default function AdminProductsPage() {
   const [bulkRunning,  setBulkRunning]  = useState(false)
   const [bulkDone,     setBulkDone]     = useState(false)
   const bulkJarRefs = useRef<Map<number, HTMLInputElement>>(new Map())
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+
+  function toggleSelect(id: string) {
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id); else next.add(id)
+      return next
+    })
+  }
+  function toggleAll() {
+    if (selectedIds.size === products.length) setSelectedIds(new Set())
+    else setSelectedIds(new Set(products.map(p => p.id)))
+  }
+  async function deleteSelected() {
+    if (selectedIds.size === 0) return
+    if (!window.confirm(`${selectedIds.size} ürün silinecek. Emin misiniz?`)) return
+    await Promise.all(
+      [...selectedIds].map(id =>
+        fetch(`/api/admin/products/${id}`, { method: "DELETE" }).catch(() => {})
+      )
+    )
+    setSelectedIds(new Set())
+    fetch("/api/admin/products").then(r => r.json()).then(d => setProducts(Array.isArray(d) ? d : [])).catch(() => {})
+  }
 
   function bulkAddRow() {
     setBulkRows(r => [...r, { id: Date.now(), name: "", price: "", type: "minecraft_plugin", jar: null }])
@@ -630,10 +654,30 @@ export default function AdminProductsPage() {
 
           {/* ── Product list ── */}
           <div className="xl:col-span-3 space-y-2">
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-xs font-bold text-white/40 uppercase tracking-widest">
-                {products.length} Ürün
-              </p>
+            <div className="flex items-center justify-between mb-4 gap-3">
+              <label className="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  className="accent-indigo-500 w-4 h-4 rounded cursor-pointer"
+                  checked={products.length > 0 && selectedIds.size === products.length}
+                  onChange={toggleAll}
+                />
+                <span className="text-xs font-bold text-white/40 uppercase tracking-widest">
+                  {products.length} Ürün
+                </span>
+              </label>
+              {selectedIds.size > 0 && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-white/40">{selectedIds.size} seçili</span>
+                  <button
+                    onClick={deleteSelected}
+                    className="flex items-center gap-1.5 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-red-400 hover:bg-red-500/20 transition-all"
+                  >
+                    <Icon icon="carbon:trash-can" width={12} />
+                    Sil
+                  </button>
+                </div>
+              )}
             </div>
 
             {loading ? (
@@ -648,7 +692,8 @@ export default function AdminProductsPage() {
             ) : (
               <div className="space-y-2">
                 {products.map(p => (
-                  <div key={p.id} className="flex items-center gap-4 rounded-xl border border-white/[0.06] bg-[#0a0a0a] px-4 py-3 hover:bg-white/[0.02] transition-all">
+                  <div key={p.id} className={cn("flex items-center gap-3 rounded-xl border px-4 py-3 hover:bg-white/[0.02] transition-all", selectedIds.has(p.id) ? "border-indigo-500/25 bg-indigo-500/[0.04]" : "border-white/[0.06] bg-[#0a0a0a]")}>
+                    <input type="checkbox" className="accent-indigo-500 w-4 h-4 rounded cursor-pointer shrink-0" checked={selectedIds.has(p.id)} onChange={() => toggleSelect(p.id)} />
                     {p.imageUrl ? (
                       <img src={p.imageUrl} className="h-10 w-16 rounded-lg object-cover border border-white/[0.07] shrink-0" alt="" />
                     ) : (
