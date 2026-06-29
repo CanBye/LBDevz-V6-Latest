@@ -50,8 +50,9 @@ export function GlobalSection({ className }: GlobalSectionProps) {
               </p>
               <h2 className="text-3xl font-light tracking-tight text-white sm:text-4xl md:text-5xl leading-[1.1]">
                 Nerede olursan ol,<br />
-                <span className="font-semibold bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
+                <span className="font-semibold bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent inline-flex items-center gap-2">
                   biz de oradayız.
+                  <img src="/assets/icons/head-shaking-vertically_1f642-200d-2195-fe0f.png" alt="" aria-hidden className="inline-block size-9 object-contain translate-y-1" />
                 </span>
               </h2>
               <p className="max-w-sm text-sm leading-relaxed text-white/45 sm:text-base">

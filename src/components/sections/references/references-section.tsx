@@ -1,69 +1,39 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
+import { Marquee } from "@/components/ui/marquee";
 
 interface ReferenceServer {
   name: string;
   href: string;
   logo?: string;
-  players: number;
 }
 
 const SERVERS: ReferenceServer[] = [
-  { name: "HanedanMC",   href: "https://hanedanmc.com",   players: 480 },
-  { name: "KralMC",      href: "#",                        players: 312 },
-  { name: "VortexMC",    href: "#",                        players: 275 },
-  { name: "EmpireMC",    href: "#",                        players: 198 },
-  { name: "NebulaRP",    href: "#",                        players: 143 },
-  { name: "StarCraft TR",href: "#",                        players: 89  },
+  { name: "HanedanMC",    href: "https://hanedanmc.com" },
+  { name: "KralMC",       href: "#" },
+  { name: "VortexMC",     href: "#" },
+  { name: "EmpireMC",     href: "#" },
+  { name: "NebulaRP",     href: "#" },
+  { name: "StarCraft TR", href: "#" },
 ];
 
-interface ReferenceCardProps extends ReferenceServer {
-  index: number;
-}
-
-function ReferenceCard({ name, href, logo, players, index }: ReferenceCardProps) {
+function ReferenceCard({ name, href, logo }: ReferenceServer) {
   return (
-    <motion.a
+    <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      initial={{ opacity: 0, y: 10 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.35, delay: index * 0.05 }}
-      className={cn(
-        "group flex items-center gap-2.5 rounded-full px-1 py-1 pr-2",
-        "border border-white/[0.1]",
-        "bg-white/[0.04]",
-        "hover:border-white/20 hover:bg-white/[0.07]",
-        "transition-all duration-300 select-none",
-      )}
+      title={name}
+      className="flex size-12 shrink-0 items-center justify-center rounded-full border border-white/[0.1] bg-white/[0.04] hover:border-white/20 hover:bg-white/[0.08] transition-all duration-300 select-none mx-3"
     >
-      {/* Server logo */}
-      <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#111] border border-white/[0.08] overflow-hidden">
-        {logo ? (
-          <img src={logo} alt={name} className="h-full w-full object-cover" />
-        ) : (
-          <span className="text-[11px] font-bold text-white/40">
-            {name.charAt(0)}
-          </span>
-        )}
-      </div>
-
-      {/* Server name */}
-      <span className="text-sm font-medium text-white/75 group-hover:text-white transition-colors">
-        {name}
-      </span>
-
-      {/* Player count pill */}
-      <div className="ml-auto flex items-center gap-1 rounded-full bg-white/[0.05] px-2 py-0.5 border border-white/[0.06]">
-        <span className="text-xs text-white/45">{players.toLocaleString("tr-TR")}</span>
-        <Icon icon="solar:users-group-two-rounded-bold" className="text-white/35" style={{ fontSize: 16 }} />
-      </div>
-    </motion.a>
+      {logo ? (
+        <img src={logo} alt={name} className="size-7 rounded-full object-cover" />
+      ) : (
+        <span className="text-sm font-bold text-white/40">{name.charAt(0)}</span>
+      )}
+    </a>
   );
 }
 
@@ -89,10 +59,13 @@ export function ReferencesSection() {
           </p>
         </motion.div>
 
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {SERVERS.map((s, i) => (
-            <ReferenceCard key={s.name} {...s} index={i} />
-          ))}
+        {/* Marquee — max-w-6xl ile hizalı, fade kenarlar */}
+        <div className="relative overflow-hidden">
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-black to-transparent z-10" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-black to-transparent z-10" />
+          <Marquee pauseOnHover repeat={4}>
+            {SERVERS.map(s => <ReferenceCard key={s.name} {...s} />)}
+          </Marquee>
         </div>
       </div>
     </section>
