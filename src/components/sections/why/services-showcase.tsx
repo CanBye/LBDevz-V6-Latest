@@ -177,7 +177,7 @@ export function ServicesShowcase({ className }: ServicesShowcaseProps) {
       {/* Grid: Sleek split screen. 
           Left: Highly technical interactive service selector.
           Right: Dynamic blueprint simulation viewer showing corresponding custom graphics. */}
-      <div className="mt-16 grid gap-8 lg:grid-cols-[1.1fr_1fr] items-stretch">
+      <div className="mt-16 grid gap-8 lg:grid-cols-[1fr_380px] items-start">
         
         {/* Interactive Service list */}
         <div className="space-y-3 flex flex-col justify-center">

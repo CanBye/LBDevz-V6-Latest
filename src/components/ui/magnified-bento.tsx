@@ -51,6 +51,7 @@ const MagnifyingLens = ({ size = 92 }: { size?: number }) => (
 );
 
 export function MagnifiedBento({ className }: { className?: string }) {
+  // max-w-[380px] ile sabitlenmiş card genişliği
   const containerRef = React.useRef<HTMLDivElement>(null);
   const lensX = useMotionValue(0);
   const lensY = useMotionValue(0);
@@ -58,8 +59,8 @@ export function MagnifiedBento({ className }: { className?: string }) {
   const inverseMask = useMotionTemplate`radial-gradient(circle 30px at calc(50% + ${lensX}px - 10px) calc(50% + ${lensY}px - 10px), transparent 100%, black 100%)`;
 
   return (
-    <div className={cn("flex items-center justify-center w-full", className)}>
-      <div className="group relative w-full overflow-hidden rounded-2xl border border-white/[0.08] bg-[#070707] p-1.5">
+    <div className={cn("flex items-start justify-start w-full", className)}>
+      <div className="group relative w-full max-w-[360px] overflow-hidden rounded-2xl border border-white/[0.08] bg-[#070707] p-1.5">
         <div
           ref={containerRef}
           className="relative w-full h-[220px] overflow-hidden rounded-xl bg-[#0a0a0a]"
