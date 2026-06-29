@@ -1,5 +1,7 @@
-import { pgTable, text, uuid, integer, boolean, timestamp, jsonb } from 'drizzle-orm/pg-core'
+import { pgTable, text, uuid, integer, boolean, timestamp, jsonb, check } from 'drizzle-orm/pg-core'
 import { users } from './users'
+import { products } from './products'
+import { sql } from 'drizzle-orm'
 
 /** A server the member has worked on / been staff at. */
 export type TeamServer = { name: string; role?: string; period?: string }
@@ -44,3 +46,17 @@ export const reviews = pgTable('reviews', {
 
 export type TeamMember = typeof teamMembers.$inferSelect
 export type Review = typeof reviews.$inferSelect
+
+/** User-submitted reviews for purchased products. */
+export const productReviews = pgTable('product_reviews', {
+  id:        uuid('id').primaryKey().defaultRandom(),
+  productId: uuid('product_id').notNull().references(() => products.id, { onDelete: 'cascade' }),
+  userId:    uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  rating:    integer('rating').notNull(),
+  comment:   text('comment'),
+  visible:   boolean('visible').default(true).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export type ProductReview = typeof productReviews.$inferSelect

@@ -58,6 +58,15 @@ export default function PublicProductPage() {
   const [showAgreement, setShowAgreement] = useState(false)
   const [agreed,        setAgreed]       = useState(false)
 
+  // Reviews
+  interface ProductReview { id: string; rating: number; comment: string | null; createdAt: string; userName: string | null; userImage: string | null }
+  const [reviews,       setReviews]      = useState<ProductReview[]>([])
+  const [myReview,      setMyReview]     = useState<{ rating: number; comment: string } | null>(null)
+  const [reviewRating,  setReviewRating] = useState(5)
+  const [reviewComment, setReviewComment] = useState("")
+  const [reviewSaving,  setReviewSaving] = useState(false)
+  const [reviewMsg,     setReviewMsg]    = useState<{ ok: boolean; text: string } | null>(null)
+
   useEffect(() => {
     // Load product (public)
     fetch(`/api/products/${id}`)
@@ -84,6 +93,30 @@ export default function PublicProductPage() {
       }).catch(() => {})
     }
   }, [id, status])
+
+  // Load reviews + my review
+  useEffect(() => {
+    fetch(`/api/magaza/${id}/reviews`).then(r => r.json()).then(d => setReviews(Array.isArray(d) ? d : [])).catch(() => {})
+    if (status === "authenticated") {
+      fetch(`/api/dashboard/reviews?productId=${id}`).then(r => r.json()).then(d => {
+        if (d) { setMyReview(d); setReviewRating(d.rating); setReviewComment(d.comment ?? "") }
+      }).catch(() => {})
+    }
+  }, [id, status])
+
+  async function submitReview() {
+    setReviewSaving(true); setReviewMsg(null)
+    const res = await fetch("/api/dashboard/reviews", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productId: id, rating: reviewRating, comment: reviewComment.trim() || null }),
+    })
+    const data = await res.json()
+    setReviewSaving(false)
+    if (!res.ok) { setReviewMsg({ ok: false, text: data.error ?? "Hata" }); return }
+    setReviewMsg({ ok: true, text: "Yorumun kaydedildi!" })
+    setMyReview({ rating: reviewRating, comment: reviewComment })
+    fetch(`/api/magaza/${id}/reviews`).then(r => r.json()).then(d => setReviews(Array.isArray(d) ? d : [])).catch(() => {})
+  }
 
   async function applyCoupon() {
     if (!product || !coupon.trim()) return
@@ -434,6 +467,81 @@ export default function PublicProductPage() {
           </div>
         </div>
       </div>
+
+      {/* ── Reviews ─────────────────────────────────────────────── */}
+      {product && (
+        <div className="mx-auto w-full max-w-6xl px-4 pb-20">
+          <h2 className="text-sm font-bold text-white/50 uppercase tracking-widest mb-6">
+            Müşteri Yorumları
+            {reviews.length > 0 && <span className="ml-2 text-white/25">({reviews.length})</span>}
+          </h2>
+
+          {/* Review form — only for owners */}
+          {alreadyOwned && (
+            <div className="rounded-2xl border border-white/[0.07] bg-[#060606] p-5 mb-6 space-y-4">
+              <p className="text-xs font-semibold text-white/60">{myReview ? "Yorumunu Güncelle" : "Yorum Bırak"}</p>
+
+              {/* Star rating */}
+              <div className="flex gap-1">
+                {[1,2,3,4,5].map(s => (
+                  <button key={s} type="button" onClick={() => setReviewRating(s)} className="transition-transform hover:scale-110">
+                    <Icon icon={s <= reviewRating ? "carbon:star-filled" : "carbon:star"} width={22} className={s <= reviewRating ? "text-amber-400" : "text-white/20"} />
+                  </button>
+                ))}
+              </div>
+
+              <textarea
+                className="w-full rounded-xl border border-white/[0.07] bg-[#0d0d0d] px-3 py-2.5 text-sm text-white placeholder-white/20 outline-none focus:border-white/20 transition-all resize-none min-h-[80px]"
+                placeholder="Ürün hakkında düşüncelerini paylaş... (opsiyonel)"
+                value={reviewComment}
+                onChange={e => setReviewComment(e.target.value)}
+                maxLength={500}
+              />
+
+              {reviewMsg && (
+                <p className={cn("text-xs font-medium", reviewMsg.ok ? "text-emerald-400" : "text-red-400")}>{reviewMsg.text}</p>
+              )}
+
+              <button
+                onClick={submitReview}
+                disabled={reviewSaving}
+                className="flex items-center gap-2 rounded-xl bg-white text-black px-5 py-2 text-xs font-bold hover:bg-white/90 disabled:opacity-50 transition-all"
+              >
+                {reviewSaving ? <><Icon icon="carbon:circle-dash" width={13} className="animate-spin" /> Kaydediliyor...</> : myReview ? "Güncelle" : "Yorum Gönder"}
+              </button>
+            </div>
+          )}
+
+          {/* Review list */}
+          {reviews.length === 0 ? (
+            <div className="rounded-2xl border border-white/[0.04] bg-[#080808] p-10 text-center">
+              <p className="text-xs text-white/20">Henüz yorum yok — ilk yorumu sen bırak!</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {reviews.map(r => (
+                <div key={r.id} className="rounded-2xl border border-white/[0.06] bg-[#060606] p-5 space-y-2">
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-8 items-center justify-center rounded-full bg-[#111] border border-white/[0.07] overflow-hidden shrink-0">
+                      {r.userImage ? <img src={r.userImage} alt="" className="h-full w-full object-cover" /> : <Icon icon="carbon:user" className="text-white/30" width={14} />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-white/70 truncate">{r.userName ?? "Anonim"}</p>
+                      <p className="text-[10px] text-white/25">{new Date(r.createdAt).toLocaleDateString("tr-TR")}</p>
+                    </div>
+                    <div className="flex gap-0.5">
+                      {[1,2,3,4,5].map(s => (
+                        <Icon key={s} icon={s <= r.rating ? "carbon:star-filled" : "carbon:star"} width={12} className={s <= r.rating ? "text-amber-400" : "text-white/15"} />
+                      ))}
+                    </div>
+                  </div>
+                  {r.comment && <p className="text-sm text-white/50 leading-relaxed">{r.comment}</p>}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       <Footer />
 
