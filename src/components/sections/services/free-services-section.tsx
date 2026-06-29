@@ -11,6 +11,11 @@ interface FreeServicesSectionProps {
   className?: string;
 }
 
+// Override icons for specific slides
+const ICON_OVERRIDES: Record<string, string> = {
+  "Fiyat teklifi": "/assets/icons/money-mouth-face_1f911.png",
+}
+
 export function FreeServicesSection({ className }: FreeServicesSectionProps) {
   const [current, setCurrent] = useState(0)
   const [dir, setDir] = useState(1)
@@ -39,6 +44,7 @@ export function FreeServicesSection({ className }: FreeServicesSectionProps) {
   }
 
   const service = freeServices[current]
+  const icon = ICON_OVERRIDES[service.title] ?? service.icon
 
   return (
     <section
@@ -72,21 +78,22 @@ export function FreeServicesSection({ className }: FreeServicesSectionProps) {
           className="relative bg-white rounded-3xl overflow-hidden"
           style={{ boxShadow: "0 32px 80px rgba(0,0,0,0.45), 0 0 0 1px rgba(0,0,0,0.06)" }}
         >
-          <div className="grid lg:grid-cols-2">
+          <div className="grid lg:grid-cols-2 min-h-[420px]">
 
             {/* Sol */}
-            <div className="flex flex-col justify-between p-12 border-b border-black/[0.05] lg:border-b-0 lg:border-r min-h-[420px]">
-              <div className="space-y-6">
+            <div className="flex flex-col justify-between p-12 border-b border-black/[0.05] lg:border-b-0 lg:border-r">
+              <div className="space-y-5">
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-black/[0.07] bg-black/[0.03] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-black/35">
                   No Cost
                 </span>
 
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <h2 className="text-[2rem] font-semibold tracking-tight text-black leading-[1.15]">
                     Her ihtiyaca yönelik
                   </h2>
-                  <h2 className="text-[2rem] font-light tracking-tight text-black/35 leading-[1.15]">
+                  <h2 className="text-[2rem] font-light tracking-tight text-black/35 leading-[1.15] flex items-center gap-2">
                     yazılım ve tasarım.
+                    <img src="/assets/icons/star-struck_1f929.png" alt="" aria-hidden className="inline-block size-8 object-contain" />
                   </h2>
                 </div>
 
@@ -96,7 +103,7 @@ export function FreeServicesSection({ className }: FreeServicesSectionProps) {
                 </p>
               </div>
 
-              <div className="mt-10 space-y-6 pt-8 border-t border-black/[0.06]">
+              <div className="mt-8 space-y-5 pt-8 border-t border-black/[0.06]">
                 <div className="flex items-center gap-8">
                   {[
                     { label: "Danışmanlık", value: "₺0" },
@@ -123,40 +130,46 @@ export function FreeServicesSection({ className }: FreeServicesSectionProps) {
             </div>
 
             {/* Sağ — slider */}
-            <div className="flex flex-col h-full">
+            <div className="flex flex-col justify-center items-center p-12 gap-8">
 
-              {/* Slide area */}
-              <div className="flex-1 flex items-center justify-center overflow-hidden px-12 py-12">
+              {/* Icon */}
+              <div className="overflow-hidden relative w-full flex items-center justify-center">
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.div
-                    key={current}
+                    key={current + "-icon"}
                     initial={{ opacity: 0, x: dir * 50 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: dir * -50 }}
                     transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                    className="flex flex-col items-center text-center gap-6 w-full max-w-[260px] mx-auto"
+                    className="flex size-24 items-center justify-center rounded-3xl border border-black/[0.07] bg-black/[0.03] shadow-sm"
                   >
-                    {/* Icon */}
-                    <div className="flex size-24 items-center justify-center rounded-3xl border border-black/[0.07] bg-black/[0.03] shadow-sm">
-                      <img src={service.icon} alt="" aria-hidden className="size-12 object-contain" />
-                    </div>
-
-                    {/* Text */}
-                    <div className="space-y-2.5">
-                      <h3 className="text-xl font-semibold text-black/85">{service.title}</h3>
-                      <p className="text-sm text-black/50 leading-relaxed">{service.description}</p>
-                    </div>
-
-                    {/* Free badge */}
-                    <span className="rounded-full border border-emerald-200 bg-emerald-50 px-5 py-1 text-xs font-bold text-emerald-600 tracking-wide">
-                      Ücretsiz
-                    </span>
+                    <img src={icon} alt="" aria-hidden className="size-12 object-contain" />
                   </motion.div>
                 </AnimatePresence>
               </div>
 
-              {/* Bottom nav */}
-              <div className="border-t border-black/[0.05] px-8 py-4 flex items-center justify-between">
+              {/* Text */}
+              <div className="overflow-hidden relative w-full text-center">
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={current + "-text"}
+                    initial={{ opacity: 0, x: dir * 50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: dir * -50 }}
+                    transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1], delay: 0.04 }}
+                    className="space-y-2"
+                  >
+                    <h3 className="text-xl font-semibold text-black/85">{service.title}</h3>
+                    <p className="text-sm text-black/50 leading-relaxed max-w-[240px] mx-auto">{service.description}</p>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              {/* Nav — dots + arrows */}
+              <div className="flex items-center gap-4">
+                <button onClick={prev} className="flex size-7 items-center justify-center rounded-full hover:bg-black/[0.05] transition-colors text-black/30 hover:text-black/60">
+                  <ChevronLeft className="size-4" />
+                </button>
                 <div className="flex items-center gap-1.5">
                   {freeServices.map((_, i) => (
                     <button
@@ -171,15 +184,11 @@ export function FreeServicesSection({ className }: FreeServicesSectionProps) {
                     />
                   ))}
                 </div>
-                <div className="flex items-center gap-1">
-                  <button onClick={prev} className="flex size-7 items-center justify-center rounded-full hover:bg-black/[0.05] transition-colors text-black/30 hover:text-black/60">
-                    <ChevronLeft className="size-4" />
-                  </button>
-                  <button onClick={next} className="flex size-7 items-center justify-center rounded-full hover:bg-black/[0.05] transition-colors text-black/30 hover:text-black/60">
-                    <ChevronRight className="size-4" />
-                  </button>
-                </div>
+                <button onClick={next} className="flex size-7 items-center justify-center rounded-full hover:bg-black/[0.05] transition-colors text-black/30 hover:text-black/60">
+                  <ChevronRight className="size-4" />
+                </button>
               </div>
+
             </div>
 
           </div>
