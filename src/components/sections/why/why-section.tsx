@@ -95,11 +95,11 @@ export function WhySection({ className }: WhySectionProps) {
             className="relative lg:mt-8 h-full"
           >
             <div className="relative border border-white/[0.08] bg-[#070707] p-8 sm:p-10 rounded-2xl h-full flex flex-col justify-between overflow-hidden">
-              <GradientDots dotSize={6} spacing={9} duration={25} colorCycleDuration={5} backgroundColor="#070707" className="opacity-40 rounded-2xl" />
+              <GradientDots dotSize={6} spacing={9} duration={25} colorCycleDuration={5} backgroundColor="#070707" className="opacity-25 rounded-2xl" />
               <DottedCorner position="top-right" className="right-4 top-4 opacity-30" size={5} />
               
-              <div className="space-y-6">
-                <span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.3em] block">
+              <div className="relative z-10 space-y-6">
+                <span className="text-[10px] font-bold text-white/60 uppercase tracking-[0.3em] block">
                   {t("whyShortAndClear")}
                 </span>
                 
@@ -107,26 +107,26 @@ export function WhySection({ className }: WhySectionProps) {
                   {t("whyMission")}
                 </h3>
                 
-                <p className="text-sm leading-relaxed text-white/45">
+                <p className="text-sm leading-relaxed text-white/65">
                   {t("whyCardBody")}
                 </p>
               </div>
 
               {/* Minimal Steps */}
-              <div className="mt-10 pt-8 border-t border-white/[0.06] grid grid-cols-1 gap-6 sm:grid-cols-3">
+              <div className="relative z-10 mt-10 pt-8 border-t border-white/[0.08] grid grid-cols-1 gap-6 sm:grid-cols-3">
                 {[
                   { title: t("whyStep1"), detail: t("whyStep1Detail") },
                   { title: t("whyStep2"), detail: t("whyStep2Detail") },
                   { title: t("whyStep3"), detail: t("whyStep3Detail") },
                 ].map((step, idx) => (
                   <div key={step.title} className="space-y-1">
-                    <span className="font-mono text-[10px] text-white/20 block">
+                    <span className="font-mono text-[10px] text-white/35 block">
                       0{idx + 1}
                     </span>
-                    <h4 className="text-xs font-semibold text-white/80">
+                    <h4 className="text-xs font-semibold text-white/90">
                       {step.title}
                     </h4>
-                    <p className="text-[11px] text-white/35">
+                    <p className="text-[11px] text-white/55">
                       {step.detail}
                     </p>
                   </div>
