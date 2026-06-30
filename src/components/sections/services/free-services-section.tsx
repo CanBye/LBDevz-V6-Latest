@@ -194,6 +194,63 @@ export function FreeServicesSection({ className }: FreeServicesSectionProps) {
           </div>
         </motion.div>
 
+      {/* LB Tools mini cards */}
+        <div className="mt-6 grid gap-3 sm:grid-cols-3">
+          {[
+            {
+              name: "LBTextify",
+              desc: "İngilizce configlerinizi Türkçeye çevirin — Claude Yapay Zekası ile sınırsız ve ücretsiz.",
+              href: "https://textify.lbdevz.com",
+              domain: "textify.lbdevz.com",
+              color: "from-violet-500/10 to-purple-500/5",
+              border: "border-violet-500/15",
+              badge: "AI Destekli",
+            },
+            {
+              name: "LBTag",
+              desc: "ItemsAdder taglar için para ödemeyin — LBTag ile sınırsız ve ücretsiz yapabilirsiniz.",
+              href: "https://tag.lbdevz.com",
+              domain: "tag.lbdevz.com",
+              color: "from-emerald-500/10 to-teal-500/5",
+              border: "border-emerald-500/15",
+              badge: "ItemsAdder",
+            },
+            {
+              name: "LBModel",
+              desc: "ItemsAdder, MythicMob veya herhangi model yapmak istiyorsanız sınırsız ve ücretsiz.",
+              href: "https://model.lbdevz.com",
+              domain: "model.lbdevz.com",
+              color: "from-sky-500/10 to-blue-500/5",
+              border: "border-sky-500/15",
+              badge: "3D Model",
+            },
+          ].map(tool => (
+            <motion.a
+              key={tool.name}
+              href={tool.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className={`group relative flex flex-col gap-3 rounded-2xl border ${tool.border} bg-gradient-to-br ${tool.color} p-5 overflow-hidden hover:bg-white/[0.03] transition-all duration-300`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-bold text-white/85">{tool.name}</span>
+                <span className="rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white/35">
+                  {tool.badge}
+                </span>
+              </div>
+              <p className="text-xs leading-relaxed text-white/50 flex-1">{tool.desc}</p>
+              <div className="flex items-center gap-1.5 text-[10px] text-white/30 group-hover:text-white/50 transition-colors">
+                <ArrowUpRight className="size-3" />
+                <span className="font-mono">{tool.domain}</span>
+              </div>
+            </motion.a>
+          ))}
+        </div>
+
       </div>
     </section>
   );
