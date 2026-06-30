@@ -43,9 +43,11 @@ function MemberCard({ member, index }: { member: TeamMember; index: number }) {
       <h3 className="text-base font-semibold text-white">{member.name}</h3>
       <p className="mt-0.5 text-[11px] font-medium uppercase tracking-widest text-white/30">{member.role}</p>
 
-      {member.bio && (
-        <p className="mt-3 text-xs leading-relaxed text-white/40 line-clamp-3">{member.bio}</p>
-      )}
+      <div className="flex-1 min-h-0">
+        {member.bio && (
+          <p className="mt-3 text-xs leading-relaxed text-white/40 line-clamp-3">{member.bio}</p>
+        )}
+      </div>
 
       {(member.github || member.discord || member.twitter) && (
         <div className="mt-4 flex items-center gap-2">
@@ -80,7 +82,7 @@ function MemberCard({ member, index }: { member: TeamMember; index: number }) {
   )
 
   const className =
-    "group relative flex flex-col items-center rounded-2xl border border-white/[0.07] bg-[#070707] p-6 text-center transition-all hover:border-white/[0.13] hover:bg-[#0a0a0a]"
+    "group relative flex flex-col items-center rounded-2xl border border-white/[0.07] bg-[#070707] p-6 text-center transition-all hover:border-white/[0.13] hover:bg-[#0a0a0a] h-full"
 
   return (
     <motion.div
@@ -88,6 +90,7 @@ function MemberCard({ member, index }: { member: TeamMember; index: number }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.5, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+      className="h-full"
     >
       {clickable ? (
         <Link href={`/ekip/${member.slug}`} className={className}>
@@ -135,7 +138,7 @@ export function TeamSection() {
           </p>
         </motion.div>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-stretch">
           {members.map((m, i) => <MemberCard key={m.id} member={m} index={i} />)}
         </div>
       </div>
