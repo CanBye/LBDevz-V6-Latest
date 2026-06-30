@@ -109,12 +109,15 @@ export default function GirisPage() {
 
   return (
     <FireworksBackground
-      population={2}
-      color={["#7c3aed","#a855f7","#6366f1","#ec4899","#f59e0b","#10b981"]}
-      fireworkSpeed={{ min: 3, max: 7 }}
-      particleSpeed={{ min: 2, max: 6 }}
-      className="flex min-h-dvh items-center justify-center bg-black px-4"
+      population={1}
+      color="#ffffff"
+      fireworkSpeed={{ min: 2, max: 4 }}
+      fireworkSize={{ min: 1, max: 2 }}
+      particleSpeed={{ min: 1, max: 3 }}
+      particleSize={{ min: 0.5, max: 2 }}
+      className="min-h-dvh bg-black"
     >
+      <div className="flex min-h-dvh items-center justify-center px-4">
       <div className="w-full max-w-sm space-y-8">
         <div className="space-y-1 text-center">
           <Link href="/" className="text-xl font-bold tracking-tight text-white">
@@ -264,6 +267,7 @@ export default function GirisPage() {
           </Link>
           {t("acceptTermsDesc").split(t("acceptTerms"))[1]}
         </p>
+      </div>
       </div>
     </FireworksBackground>
   )
