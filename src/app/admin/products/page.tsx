@@ -54,6 +54,7 @@ export default function AdminProductsPage() {
   const [products,    setProducts]   = useState<Product[]>([])
   const [staffUsers,  setStaffUsers] = useState<StaffUser[]>([])
   const [loading,     setLoading]    = useState(true)
+  const openConfirm = useConfirm()
 
   // Edit modal
   const [editProduct,    setEditProduct]    = useState<Product | null>(null)
@@ -125,7 +126,7 @@ export default function AdminProductsPage() {
   }
   async function deleteSelected() {
     if (selectedIds.size === 0) return
-    const ok = await confirm({ title: "Ürünleri Sil", description: `${selectedIds.size} ürün kalıcı olarak silinecek. Emin misiniz?`, confirmText: "Evet, Sil", cancelText: "İptal" })
+    const ok = await openConfirm({ title: "Ürünleri Sil", description: `${selectedIds.size} ürün kalıcı olarak silinecek. Emin misiniz?`, confirmText: "Evet, Sil", cancelText: "İptal" })
     if (!ok) return
     await Promise.all(
       [...selectedIds].map(id =>

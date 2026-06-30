@@ -32,7 +32,7 @@ export default function ReferencesAdminPage() {
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null)
   const [logoMode, setLogoMode] = useState<"url" | "upload">("url")
-  const confirm = useConfirm()
+  const openConfirm = useConfirm()
   const [uploadLoading, setUploadLoading] = useState(false)
 
   async function load() {
@@ -76,7 +76,7 @@ export default function ReferencesAdminPage() {
   }
 
   async function del(id: string) {
-    const ok = await confirm({ title: "Sunucu Sil", description: "Bu sunucu kalıcı olarak silinecek.", confirmText: "Sil", cancelText: "İptal" })
+    const ok = await openConfirm({ title: "Sunucu Sil", description: "Bu sunucu kalıcı olarak silinecek.", confirmText: "Sil", cancelText: "İptal" })
     if (!ok) return
     await fetch(`/api/admin/references/${id}`, { method: "DELETE" })
     load()
