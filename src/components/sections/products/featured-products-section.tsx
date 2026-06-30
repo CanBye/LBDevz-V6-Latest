@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SectionHeader } from "@/components/ui/section-header";
-import { featuredProducts as staticProducts, siteConfig } from "@/lib/site-content";
+import { siteConfig } from "@/lib/site-content";
 import { useLanguage } from "@/lib/language-context";
 
 interface DBProduct {
@@ -83,20 +83,19 @@ export function FeaturedProductsSection({ className }: FeaturedProductsSectionPr
       .catch(() => {})
   }, [])
 
-  // Map DB products to display format, fall back to static if no DB products
-  const products = dbProducts.length > 0
-    ? dbProducts.map(p => ({
-        id: p.slug || p.id,
-        name: p.name,
-        description: stripHtml(p.description, t("productDescFallback")),
-        price: `₺${p.priceCredits}`,
-        badge: null as string | null,
-        icon: staticProducts[0]?.icon ?? "",
-        cover: p.imageUrl ?? staticProducts[0]?.cover ?? "",
-        accent: "from-indigo-950/80 via-indigo-900/20 to-transparent",
-        href: `/dashboard/magaza/${p.id}`,
-      }))
-    : staticProducts.map(p => ({ ...p, href: siteConfig.discordInvite }))
+  const products = dbProducts.map(p => ({
+    id: p.slug || p.id,
+    name: p.name,
+    description: stripHtml(p.description, t("productDescFallback")),
+    price: `₺${p.priceCredits}`,
+    badge: null as string | null,
+    icon: "",
+    cover: p.imageUrl ?? "",
+    accent: "from-indigo-950/80 via-indigo-900/20 to-transparent",
+    href: `/dashboard/magaza/${p.id}`,
+  }))
+
+  if (products.length === 0) return null
 
   return (
     <section
