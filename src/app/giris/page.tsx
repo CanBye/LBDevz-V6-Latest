@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { TurnstileWidget } from "@/components/ui/turnstile-widget"
 import { useLanguage } from "@/lib/language-context"
+import { FireworksBackground } from "@/components/ui/fireworks-background"
 
 type Tab = "giris" | "kayit"
 
@@ -107,7 +108,13 @@ export default function GirisPage() {
   }
 
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-black px-4">
+    <FireworksBackground
+      population={2}
+      color={["#7c3aed","#a855f7","#6366f1","#ec4899","#f59e0b","#10b981"]}
+      fireworkSpeed={{ min: 3, max: 7 }}
+      particleSpeed={{ min: 2, max: 6 }}
+      className="flex min-h-dvh items-center justify-center bg-black px-4"
+    >
       <div className="w-full max-w-sm space-y-8">
         <div className="space-y-1 text-center">
           <Link href="/" className="text-xl font-bold tracking-tight text-white">
@@ -258,6 +265,6 @@ export default function GirisPage() {
           {t("acceptTermsDesc").split(t("acceptTerms"))[1]}
         </p>
       </div>
-    </div>
+    </FireworksBackground>
   )
 }
