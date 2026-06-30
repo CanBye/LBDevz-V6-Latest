@@ -63,10 +63,15 @@ function PostCard({ post, index }: { post: Post; index: number }) {
 }
 
 export function BlogSection() {
-  const [posts, setPosts] = useState<Post[]>([])
+  const DEMO_POSTS: Post[] = [
+    { id: "1", title: "Minecraft Sunucunuzu Nasıl Büyütürsünüz?", slug: "#", excerpt: "Sunucu büyütmek için izlemeniz gereken temel adımlar ve stratejiler.", cover_url: null, published_at: new Date().toISOString(), author_name: "LBDev", author_image: null },
+    { id: "2", title: "En İyi Discord Bot Özellikleri 2025", slug: "#", excerpt: "Topluluğunuzu canlandıracak Discord bot özellikleri ve ipuçları.", cover_url: null, published_at: new Date().toISOString(), author_name: "LBDev", author_image: null },
+    { id: "3", title: "Web Sitesi Tasarımında Yeni Trendler", slug: "#", excerpt: "Modern web tasarımında öne çıkan trendler ve kullanıcı deneyimi ipuçları.", cover_url: null, published_at: new Date().toISOString(), author_name: "LBDev", author_image: null },
+  ]
+  const [posts, setPosts] = useState<Post[]>(DEMO_POSTS)
 
   useEffect(() => {
-    fetch("/api/site/blog").then(r => r.json()).then(d => setPosts(Array.isArray(d) ? d.slice(0, 3) : [])).catch(() => {})
+    fetch("/api/site/blog").then(r => r.json()).then(d => { if (Array.isArray(d) && d.length > 0) setPosts(d.slice(0, 3)) }).catch(() => {})
   }, [])
 
   if (posts.length === 0) return null

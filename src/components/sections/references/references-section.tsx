@@ -24,12 +24,20 @@ function ReferenceCard({ name, href, logoUrl }: RefServer) {
 }
 
 export function ReferencesSection() {
-  const [servers, setServers] = useState<RefServer[]>([])
+  const DEMO_SERVERS: RefServer[] = [
+    { id: "1", name: "HanedanMC",    href: "#", logoUrl: null },
+    { id: "2", name: "KralMC",       href: "#", logoUrl: null },
+    { id: "3", name: "VortexMC",     href: "#", logoUrl: null },
+    { id: "4", name: "EmpireMC",     href: "#", logoUrl: null },
+    { id: "5", name: "NebulaRP",     href: "#", logoUrl: null },
+    { id: "6", name: "StarCraft TR", href: "#", logoUrl: null },
+  ]
+  const [servers, setServers] = useState<RefServer[]>(DEMO_SERVERS)
 
   useEffect(() => {
     fetch("/api/site/references?type=section")
       .then(r => r.json())
-      .then(d => { if (Array.isArray(d)) setServers(d) })
+      .then(d => { if (Array.isArray(d) && d.length > 0) setServers(d) })
       .catch(() => {})
   }, [])
 

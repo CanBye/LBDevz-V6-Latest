@@ -100,12 +100,18 @@ function MemberCard({ member, index }: { member: TeamMember; index: number }) {
   )
 }
 
+const DEMO_MEMBERS: TeamMember[] = [
+  { id: "1", slug: null, name: "CanBye", role: "Kurucu & Full-Stack", bio: "Minecraft sunucuları ve web projeleri üzerine uzmanlaşmış geliştirici.", image: null, github: null, discord: null, twitter: null, order: 0 },
+  { id: "2", slug: null, name: "Ahmet K.", role: "Backend Geliştirici", bio: "API tasarımı ve veritabanı optimizasyonu konusunda deneyimli.", image: null, github: null, discord: null, twitter: null, order: 1 },
+  { id: "3", slug: null, name: "Zeynep A.", role: "UI/UX Tasarımcı", bio: "Modern ve kullanıcı dostu arayüzler tasarlıyor.", image: null, github: null, discord: null, twitter: null, order: 2 },
+]
+
 export function TeamSection() {
   const { t } = useLanguage()
-  const [members, setMembers] = useState<TeamMember[]>([])
+  const [members, setMembers] = useState<TeamMember[]>(DEMO_MEMBERS)
 
   useEffect(() => {
-    fetch("/api/site/team").then(r => r.json()).then(d => setMembers(Array.isArray(d) ? d : [])).catch(() => {})
+    fetch("/api/site/team").then(r => r.json()).then(d => { if (Array.isArray(d) && d.length > 0) setMembers(d) }).catch(() => {})
   }, [])
 
   if (members.length === 0) return null
