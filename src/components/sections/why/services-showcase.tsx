@@ -84,7 +84,7 @@ interface ServicesShowcaseProps { className?: string }
 
 export function ServicesShowcase({ className }: ServicesShowcaseProps) {
   const services = aboutContent.services
-  const [stats, setStats] = useState({ products: 0, customers: 854 })
+  const [stats, setStats] = useState({ products: 0, customers: 854 }) // 854 base + kayıtlı kullanıcılar
 
   useEffect(() => {
     fetch("/api/site/stats")

@@ -14,9 +14,11 @@ export async function GET() {
       .select({ value: count() })
       .from(users)
 
+    const BASE_CUSTOMERS = 854
+
     return NextResponse.json({
       products: Number(productCount) || 0,
-      customers: Number(customerCount) || 0,
+      customers: BASE_CUSTOMERS + (Number(customerCount) || 0),
     })
   } catch {
     return NextResponse.json({ products: 0, customers: 0 })
