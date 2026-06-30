@@ -21,10 +21,29 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
   }
 
   try {
-    const payload = { event: hook.event, test: true, timestamp: new Date().toISOString(), source: "lbdevz-admin" }
+    const isDiscord = hook.url.includes("discord.com/api/webhooks")
+    const payload = isDiscord
+      ? {
+          username: "LBDevz",
+          embeds: [{
+            title: "🧪 Test Webhook",
+            description: `**Event:** \`${hook.event}\`\nTest mesajı başarıyla alındı!`,
+            color: 0x7c3aed,
+            footer: { text: "LBDevz Admin" },
+            timestamp: new Date().toISOString(),
+          }],
+        }
+      : { event: hook.event, test: true, timestamp: new Date().toISOString(), source: "lbdevz-admin" }
+
+    const headers: Record<string, string> = { "Content-Type": "application/json" }
+    if (!isDiscord) {
+      headers["X-LBDevz-Event"] = hook.event
+      headers["X-LBDevz-Test"] = "true"
+    }
+
     const res = await fetch(hook.url, {
       method: "POST",
-      headers: { "Content-Type": "application/json", "X-LBDevz-Event": hook.event, "X-LBDevz-Test": "true" },
+      headers,
       body: JSON.stringify(payload),
       redirect: "manual",
       signal: AbortSignal.timeout(10_000),
