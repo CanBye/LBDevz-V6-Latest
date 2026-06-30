@@ -23,7 +23,8 @@ export function WhySection({ className }: WhySectionProps) {
         <div className="grid items-stretch gap-12 lg:grid-cols-[1.2fr_1fr] lg:gap-20">
           
           {/* Biz Kimiz? */}
-          <div className="space-y-8 flex flex-col justify-between">
+          <div className="space-y-8 flex flex-col justify-between relative">
+            <DottedCorner position="top-left" className="opacity-20" size={7} />
             <div className="space-y-6">
               <motion.div
                 initial={{ opacity: 0, x: -10 }}
@@ -97,6 +98,7 @@ export function WhySection({ className }: WhySectionProps) {
             <div className="relative border border-white/[0.08] bg-[#070707] p-8 sm:p-10 rounded-2xl h-full flex flex-col justify-between overflow-hidden">
               <GradientDots dotSize={6} spacing={9} duration={25} colorCycleDuration={5} backgroundColor="#070707" className="opacity-25 rounded-2xl" />
               <DottedCorner position="top-right" className="right-4 top-4 opacity-30" size={5} />
+              <DottedCorner position="bottom-right" className="right-4 bottom-4 opacity-20" size={5} />
               
               <div className="relative z-10 space-y-6">
                 <span className="text-[10px] font-bold text-white/60 uppercase tracking-[0.3em] block">
