@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { assets } from "@/lib/assets";
+import { QuarterRing } from "@/components/ui/quarter-ring";
 
 interface IntroSplashProps {
   onBurstStart: () => void;
@@ -61,6 +62,16 @@ export function IntroSplash({ onBurstStart, onComplete }: IntroSplashProps) {
           />
         </motion.span>
       </motion.p>
+
+      {/* Bottom center spinner */}
+      <motion.div
+        className="absolute bottom-36 left-1/2 -translate-x-1/2"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: exiting ? 0 : 0.4 }}
+        transition={{ delay: 0.6, duration: 0.5 }}
+      >
+        <span className="block size-11 rounded-full border-t-[3px] border-r-[3px] border-t-white border-r-transparent animate-spin" />
+      </motion.div>
     </motion.div>
   );
 }

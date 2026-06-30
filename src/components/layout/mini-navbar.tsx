@@ -70,7 +70,17 @@ export function MiniNavbar() {
   ];
 
   return (
-    <header className="absolute top-10 left-1/2 z-20 w-[calc(100%-2rem)] max-w-7xl -translate-x-1/2 py-3 text-white">
+    <header className="absolute top-10 left-1/2 z-20 w-[calc(100%-2rem)] max-w-7xl -translate-x-1/2 py-3 text-white rounded-2xl"
+        style={{
+          background: "rgba(0,0,0,0.45)",
+          backdropFilter: "blur(18px)",
+          WebkitBackdropFilter: "blur(18px)",
+          border: "1px solid rgba(255,255,255,0.07)",
+          boxShadow: "0 0 40px 4px rgba(53,1,54,0.25), inset 0 1px 0 rgba(255,255,255,0.05)",
+          paddingLeft: "1.25rem",
+          paddingRight: "1.25rem",
+        }}
+      >
       <div className="flex items-center justify-between gap-8">
         {/* Left */}
         <div className="flex items-center gap-3">

@@ -13,16 +13,9 @@ interface CursorProps {
 
 function CursorSVG({ color = "#6366f1" }: { color?: string }) {
   return (
-    <svg width="18" height="22" viewBox="0 0 18 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M0.857143 0L0 0.857143V16.5714L4.28571 12.2857H8.57143L14.1429 21.4286L16.7143 20L11.1429 10.8571H16.7143L0.857143 0Z"
-        fill={color}
-      />
-      <path
-        d="M1.5 1.91421L15.1716 10.8571H10.4853L16.0569 20L14.1429 21L8.57143 11.5714H3.75736L1.5 14.8284V1.91421Z"
-        fill="white"
-        fillOpacity="0.3"
-      />
+    <svg width="16" height="20" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 0L0 16L4 12H8L13 20L15 19L10 11H15L0 0Z" fill={color} />
+      <path d="M1 2.5L13 10.5H9L14.2 19L13 19.5L8 11H3.5L1 13.5V2.5Z" fill="white" fillOpacity="0.25" />
     </svg>
   )
 }
